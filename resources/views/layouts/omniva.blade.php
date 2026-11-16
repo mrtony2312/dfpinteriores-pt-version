@@ -6,11 +6,15 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'DFP Interiores')</title>
     <meta name="description" content="@yield('meta_description', 'DFP Interiores: Especialistas em Sofás e Mobiliário para a sua casa. Qualidade, design moderno e os melhores preços.')">
+<<<<<<< Updated upstream
     <meta name="robots" content="{{ $robots ?? 'index, follow' }}">
     <meta name="googlebot" content="{{ $robots ?? 'index, follow' }}">
     <link rel="canonical" href="{{ $canonical }}">
     <link rel="alternate" href="{{ $canonical }}" hreflang="pt-PT" />
     <link rel="alternate" href="{{ $canonical }}" hreflang="x-default" />
+=======
+    <link rel="canonical" href="{{ $canonical ?? url()->current() }}">
+>>>>>>> Stashed changes
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32.png?v=3">
 
     <link rel="stylesheet" href="/omniva/fonts/fonts.css">
@@ -22,7 +26,11 @@
     <link rel="stylesheet" href="/assets/css/footer-classic.css?v=3">
     <link rel="stylesheet" href="/assets/css/shipping-marquee.css?v=2">
     <link rel="stylesheet" href="/assets/css/home-promo-slider.css?v=1">
+<<<<<<< Updated upstream
     <link rel="stylesheet" href="/assets/css/site-nav.css?v=5">
+=======
+    <link rel="stylesheet" href="/assets/css/site-nav.css?v=4">
+>>>>>>> Stashed changes
     <style>
         /* Bannières promo — image entière, affichage normal */
         .dfp-promo-banner {
@@ -88,6 +96,7 @@
         .price-new.text-primary, .text-primary { color: #e5007d !important; }
         .card-product .product-action_bot .btn-action_choose { cursor: pointer; }
 
+<<<<<<< Updated upstream
         /* Mobile header bar */
         @media (max-width: 1199px) {
             .tf-header .header-inner {
@@ -244,6 +253,8 @@
             background: #e5007d;
             color: #fff;
         }
+=======
+>>>>>>> Stashed changes
     </style>
     @stack('styles')
 </head>
@@ -258,6 +269,7 @@
     </div>
 
     <main id="wrapper">
+<<<<<<< Updated upstream
         <div class="tf-topbar bg-dfp sm-d-none">
             <div class="container-full">
                 <div class="row">
@@ -383,11 +395,15 @@
 
         @include('partials.shipping-marquee')
 
+=======
+        @include('partials.site-nav')
+>>>>>>> Stashed changes
         @yield('content')
 
         @include('partials.footer-classic')
     </main>
 
+<<<<<<< Updated upstream
     <div class="offcanvas offcanvas-start canvas-mb" id="mobileMenu">
         <div class="canvas-header">
             <a href="{{ route('home') }}" class="logo-text">DFP <span>Interiores</span></a>
@@ -465,6 +481,8 @@
         </div>
     </div>
 
+=======
+>>>>>>> Stashed changes
     <script src="/omniva/js/plugin/bootstrap.min.js"></script>
     <script src="/omniva/js/plugin/jquery.min.js"></script>
     <script src="/omniva/js/plugin/swiper-bundle.min.js"></script>

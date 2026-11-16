@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\AuthController as AdminAuthController;
+use App\Http\Controllers\Admin\BankSettingController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
@@ -23,7 +25,27 @@ Route::get('/feeds/google-merchant.xml', [GoogleFeedController::class, 'xml'])->
 Route::get('/dfpinteriores-gmc-conforme.xml', [GoogleFeedController::class, 'xml'])->name('gmc.conforme');
 Route::get('/admin/feed/health', [GoogleFeedController::class, 'health'])->name('feed.health');
 
+<<<<<<< Updated upstream
 // Sitemap XML : home, pages institutionnelles, catégories, listes + fiches produit.
+=======
+// --- Admin : login + édition des données bancaires affichées sur le site ---
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::middleware('throttle:10,1')->group(function () {
+        Route::get('/login', [AdminAuthController::class, 'showLogin'])->name('login');
+        Route::post('/login', [AdminAuthController::class, 'login'])->name('login.submit');
+    });
+    Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
+
+    Route::middleware('admin')->group(function () {
+        Route::get('/', fn () => redirect()->route('admin.bank.edit'));
+        Route::get('/banco', [BankSettingController::class, 'edit'])->name('bank.edit');
+        Route::put('/banco', [BankSettingController::class, 'update'])->name('bank.update');
+        Route::delete('/banco', [BankSettingController::class, 'destroy'])->name('bank.destroy');
+    });
+});
+
+// Sitemap XML : pages institutionnelles + fiches produit publiées (avec image).
+>>>>>>> Stashed changes
 Route::get('/sitemap.xml', function () {
     $static = [
         '/',
@@ -101,9 +123,11 @@ Route::get('/apoioaocliente', [SupportController::class, 'show'])->name('support
 Route::post('/apoioaocliente', [SupportController::class, 'submit'])->name('support.submit');
 
 // --- Compte client ---
-Route::post('/cliente/login', [AuthController::class, 'login'])->name('cliente.login');
-Route::post('/cliente/registo', [AuthController::class, 'register'])->name('cliente.registo');
-Route::post('/cliente/register', [AuthController::class, 'register']);
+Route::middleware('throttle:20,1')->group(function () {
+    Route::post('/cliente/login', [AuthController::class, 'login'])->name('cliente.login');
+    Route::post('/cliente/registo', [AuthController::class, 'register'])->name('cliente.registo');
+    Route::post('/cliente/register', [AuthController::class, 'register']);
+});
 Route::match(['get', 'post'], '/cliente/logout', [AuthController::class, 'logout'])->name('cliente.logout');
 
 // Recherche : autocomplete (JSON) + page de résultats

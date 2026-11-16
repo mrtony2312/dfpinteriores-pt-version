@@ -52,6 +52,15 @@
         a.Wishlist.is-active svg { fill: #e5007d; stroke: #e5007d; }
     </style>
     <link rel="stylesheet" href="/assets/css/shipping-marquee.css?v=2">
+<<<<<<< Updated upstream
+=======
+    <link rel="stylesheet" href="/omniva/fonts/fonts.css">
+    <link rel="stylesheet" href="/omniva/icon/icomoon/style.css">
+    <link rel="stylesheet" href="/omniva/css/swiper-bundle.min.css">
+    <link rel="stylesheet" href="/omniva/css/styles.css">
+    <link rel="stylesheet" href="/assets/css/site-nav.css?v=4">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+>>>>>>> Stashed changes
 
 
 
@@ -134,7 +143,10 @@
     <link href="/assets/css/pt/feira.css?id=2" rel="stylesheet">
     <link href="/assets/css/shop.css?v=16" rel="stylesheet">
     <link rel="stylesheet" href="/assets/css/footer-classic.css?v=3">
+<<<<<<< Updated upstream
     <link rel="stylesheet" href="/assets/css/site-nav.css?v=5">
+=======
+>>>>>>> Stashed changes
 
 
     <style>
@@ -152,6 +164,7 @@
 </head>
 
 <body>
+    @include('partials.site-nav')
     @verbatim
 
 
@@ -1375,143 +1388,17 @@
                 <div class="Body">
                 @endverbatim
 
+<<<<<<< Updated upstream
                 @include('partials.shipping-marquee')
+=======
+>>>>>>> Stashed changes
 
                 @yield('content')
 
-                @verbatim
-                    <footer class="footer">
-
-                        <div class="newsletter">
-                            <div class="container">
-                                <div class="newsletter-content">
-                                    <h3>Subscreva a nossa Newsletter</h3>
-                                    <p>Receba promoções exclusivas e novidades no seu e-mail.</p>
-                                </div>
-                                <div v-if="!newsletter.success" class="newsletter-form">
-                                    <input v-model="newsletter.email" type="text" placeholder="O seu e-mail">
-                                    <button @click="addNewsletter">Subscrever</button>
-                                    <div v-if="newsletter.error" class="error">${newsletter.error[0]}</div>
-                                </div>
-                                <div v-else class="newsletter-success alert alert-success">
-                                    Registo concluído com sucesso!
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="destaques">
-                            <div class="container grid-4">
-                                <div class="item">
-                                    <svg class="sprite-icon">
-                                        <use href="/img/footer_icons.svg#apoio_cliente"></use>
-                                    </svg>
-                                    <div class="text">
-                                        <h4>Apoio ao Cliente</h4>
-                                        <p>Telefone, e-mail ou chat.</p>
-                                    </div>
-                                </div>
-                                <div class="item">
-                                    <svg class="sprite-icon">
-                                        <use href="/img/footer_icons.svg#entrega"></use>
-                                    </svg>
-                                    <div class="text">
-                                        <h4>Entrega Rápida</h4>
-                                        <p>Em todo o país.</p>
-                                    </div>
-                                </div>
-                                <div class="item">
-                                    <svg class="sprite-icon">
-                                        <use href="/img/footer_icons.svg#satisfacao"></use>
-                                    </svg>
-                                    <div class="text">
-                                        <h4>Satisfação garantida</h4>
-                                        <p>Feedback dos nossos clientes.</p>
-                                    </div>
-                                </div>
-                                <div class="item">
-                                    <svg class="sprite-icon">
-                                        <use href="/img/footer_icons.svg#qualidade"></use>
-                                    </svg>
-                                    <div class="text">
-                                        <h4>Pagamento Seguro</h4>
-                                        <p>Vários métodos disponíveis.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="links">
-                            <div class="container grid-4">
-                                <div class="link-group">
-                                    <h3>Links Úteis</h3>
-                                    <ul>
-                                        <li><a href="/lojas">As nossas lojas</a></li>
-                                        <li><a href="/contactos">Contactos</a></li>
-                                        <li><a href="/ajuda/termos-e-condicoes">Termos e Condições</a></li>
-                                        <li><a href="/ajuda/politica-privacidade">Política de Privacidade</a></li>
-                                        <li><a href="/ajuda/politica-de-cookies">Política de Cookies</a></li>
-                                        <li><a href="/ajuda/politica-de-envios">Política de Envios e Entregas</a></li>
-                                        <li><a href="/ajuda/politica-de-devolucoes">Política de Devoluções e Reembolsos</a></li>
-                                        <li><a href="/ajuda/resolucao-alternativa-litigios">Resolução Alternativa de
-                                                Litígios</a></li>
-                                        <li><a href="https://www.livroreclamacoes.pt/inicio/" target="_blank" rel="noopener">Livro de Reclamações</a></li>
-                                        <li><a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener">Resolução de Litígios em Linha (UE)</a></li>
-                                    </ul>
-                                </div>
-
-                                <div class="link-group">
-                                    <h3>Horário</h3>
-                                    <p>Segunda a Sexta: 09h - 22h</p>
-                                    <p>Sábado: 9h - 18h<br><small>Exclusivo loja online</small></p>
-                                </div>
-
-                                <div class="link-group">
-                                    <h3>Contactos</h3>
-                                    <p>DFP Interiores, Unipessoal Lda</p>
-                                    <p>Rua José Francisco Fragoso, n.º 45<br>7080-035 Vendas Novas</p>
-                                    <p><a href="mailto:contacto@dfpinteriores.com">contacto@dfpinteriores.com</a></p>
-                                    <p><a href="tel:+351912026453">+351 912 026 453</a></p>
-                                    <p><small>NIF 504074571</small></p>
-                                </div>
-<div class="link-group">
-                                    <h3>Métodos de Pagamento</h3>
-                                    <div class="payment-methods">
-                                        <img src="/img/payments/visa.svg" alt="Visa">
-                                        <img src="/img/payments/paypal.svg" alt="PayPal">
-                                        <img src="/img/payments/mastercard.svg" alt="Mastercard">
-                                        <img src="/img/payments/amex.svg" alt="American Express">
-                                        <img src="/img/mbway.png" alt="MB Way">
-                                        <img src="/img/mb.png" alt="Multibanco">
-                                        <img src="/img/payments/klarna.svg" alt="Klarna">
-                                        <img src="/img/payments/revolut.svg" alt="Revolut Pay">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="footer-bottom">
-                            <div class="container">
-                                <div>
-                                    <p>
-                                        Preços válidos salvo erro de publicação e limitados ao stock existente.
-                                        <br>
-                                        Os preços riscados são os Preços de Venda recomendados pelos fabricantes. Válido
-                                        apenas na loja Online.
-                                        <br>
-                                        Copyright 2026 - DFP Interiores todos os direitos reservados.
-                                    </p>
-                                </div>
-                                <div>
-                                    <small>Cofinanciado por</small>
-                                    <div class="cofinanciado-logos">
-                                        <img src="/img/compete.png" alt="Portugal 2020">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                @include('partials.footer-classic')
                 </div>
 
-
-
+                @verbatim
                 <div class="backToTop">
                     <a href="#"><img alt="Voltar ao topo" src='/assets/icons/chevron-circle-up-duotone.svg'
                             width='40' height="40"></a>
@@ -1903,6 +1790,26 @@
         </div>
     @endverbatim
     @stack('scripts')
-</body>
+
+<script src="/omniva/js/plugin/swiper-bundle.min.js"></script>
+<script>
+(function () {
+    if (typeof Swiper === 'undefined') return;
+    document.querySelectorAll('.swiper-topbar').forEach(function (el) {
+        if (el.swiper) return;
+        var main = el.closest('.tf-btn-swiper-main');
+        new Swiper(el, {
+            loop: true,
+            autoplay: { delay: 3500, disableOnInteraction: false },
+            speed: 1500,
+            allowTouchMove: false,
+            navigation: main ? {
+                prevEl: main.querySelector('.nav-prev-swiper'),
+                nextEl: main.querySelector('.nav-next-swiper')
+            } : undefined
+        });
+    });
+})();
+</script></body>
 
 </html>

@@ -43,6 +43,12 @@ _Igual à morada de entrega._
 
 {{ $order->paymentLabel() }}
 
+@if ($order->transfer_proof_path)
+Comprovativo anexado a este email: **{{ $order->transfer_proof_name ?: 'comprovativo-transferencia' }}**
+@else
+_Sem comprovativo anexado._
+@endif
+
 @if ($order->notes)
 ## Notas do cliente
 

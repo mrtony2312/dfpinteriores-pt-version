@@ -26,13 +26,37 @@ Vai receber uma nova mensagem assim que for expedida.
 Para confirmar a sua encomenda **{{ $order->ref }}**, falta apenas concluir o pagamento no valor de **{{ $order->money($order->total) }}**.
 
 **Método:** {{ $order->paymentLabel() }}
-@if ($order->payment_method === 'MULTIBANCO')
-Vai receber os dados de pagamento (entidade e referência) para pagar numa caixa Multibanco ou por homebanking.
+
+@php($bank = \App\Http\Controllers\CheckoutController::bankDetails())
+Efetue a transferência bancária no valor de **{{ $order->money($order->total) }}** com o descritivo **{{ $order->ref }}**:
+
+@if ($bank['holder'] || $bank['iban'])
+@if ($bank['holder'])
+- **Titular:** {{ $bank['holder'] }}
+@endif
+@if ($bank['iban'])
+- **IBAN:** {{ $bank['iban'] }}
+@endif
+@if ($bank['bic'])
+- **BIC/SWIFT:** {{ $bank['bic'] }}
+@endif
+@if ($bank['bank_name'])
+- **Banco:** {{ $bank['bank_name'] }}
+@endif
+@if ($bank['nif'])
+- **NIF:** {{ $bank['nif'] }}
+@endif
 @else
-Vai receber um pedido de pagamento na aplicação **MB WAY** no número {{ $order->phone }}.
+Os dados bancários serão comunicados pela nossa equipa.
 @endif
 
-Prefere finalizar o pagamento connosco diretamente? Toque no botão abaixo para falar com a nossa equipa pelo WhatsApp e concluir a sua encomenda.
+@if ($order->transfer_proof_path)
+Recebemos o seu comprovativo (**{{ $order->transfer_proof_name }}**) — também segue em anexo neste email.
+@endif
+
+A encomenda será processada após confirmação do pagamento.
+
+Prefere falar connosco? Toque no botão abaixo para contactar a nossa equipa pelo WhatsApp.
 
 @php
     $itemsSummary = $order->items->map(fn ($it) => $it->qty.'x '.$it->name.($it->variation ? ' ('.$it->variation.')' : ''))->implode(', ');
