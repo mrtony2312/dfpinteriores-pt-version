@@ -8,7 +8,9 @@ use App\Http\Controllers\Merchant\GoogleFeedController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\SupportController;
 use App\Http\Controllers\WishlistController;
+use App\Models\Category;
 use App\Models\Product;
+use App\Support\Seo;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [StoreController::class, 'home'])->name('home');
@@ -21,30 +23,61 @@ Route::get('/feeds/google-merchant.xml', [GoogleFeedController::class, 'xml'])->
 Route::get('/dfpinteriores-gmc-conforme.xml', [GoogleFeedController::class, 'xml'])->name('gmc.conforme');
 Route::get('/admin/feed/health', [GoogleFeedController::class, 'health'])->name('feed.health');
 
-// Sitemap XML : pages institutionnelles + fiches produit publiées (avec image).
+// Sitemap XML : home, pages institutionnelles, catégories, listes + fiches produit.
 Route::get('/sitemap.xml', function () {
-    $base = rtrim(config('feed.base_url'), '/');
-    $static = ['', '/lojas', '/contactos', '/apoioaocliente', '/ajuda/termos-e-condicoes',
-        '/ajuda/politica-privacidade', '/ajuda/politica-de-cookies', '/ajuda/politica-de-envios',
-        '/ajuda/politica-de-devolucoes', '/ajuda/resolucao-alternativa-litigios'];
+    $static = [
+        '/',
+        '/lojas',
+        '/contactos',
+        '/apoioaocliente',
+        '/descontos70',
+        '/artigosExclusivosOnline',
+        '/ajuda/termos-e-condicoes',
+        '/ajuda/politica-privacidade',
+        '/ajuda/politica-de-cookies',
+        '/ajuda/politica-de-envios',
+        '/ajuda/politica-de-devolucoes',
+        '/ajuda/resolucao-alternativa-litigios',
+    ];
 
-    return response()->stream(function () use ($base, $static) {
+    return response()->stream(function () use ($static) {
         $out = fopen('php://output', 'w');
         fwrite($out, '<?xml version="1.0" encoding="UTF-8"?>'."\n".'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n");
+
+        $write = static function (string $loc) use ($out): void {
+            fwrite($out, '  <url><loc>'.htmlspecialchars($loc, ENT_XML1).'</loc></url>'."\n");
+        };
+
         foreach ($static as $p) {
-            fwrite($out, '  <url><loc>'.htmlspecialchars($base.$p, ENT_XML1).'</loc></url>'."\n");
+            $write(Seo::absolute($p));
         }
+
+        Category::query()->orderBy('id')->chunk(200, function ($chunk) use ($write) {
+            foreach ($chunk as $cat) {
+                $slug = trim((string) $cat->slug, '/');
+                if ($slug === '') {
+                    continue;
+                }
+                $write(Seo::absolute('/'.$slug));
+            }
+            flush();
+        });
+
         Product::query()->whereHas('images')->where('price', '>', 0)
-            ->orderBy('id')->chunk(500, function ($chunk) use ($out, $base) {
+            ->orderBy('id')->chunk(500, function ($chunk) use ($write) {
                 foreach ($chunk as $p) {
                     $seg = implode('/', array_map('rawurlencode', explode('/', ltrim((string) $p->slug, '/'))));
-                    fwrite($out, '  <url><loc>'.htmlspecialchars($base.'/'.$seg, ENT_XML1).'</loc></url>'."\n");
+                    $write(Seo::absolute('/'.$seg));
                 }
                 flush();
             });
+
         fwrite($out, '</urlset>'."\n");
         fclose($out);
-    }, 200, ['Content-Type' => 'application/xml; charset=UTF-8']);
+    }, 200, [
+        'Content-Type' => 'application/xml; charset=UTF-8',
+        'X-Robots-Tag' => 'noindex',
+    ]);
 })->name('sitemap');
 
 // --- Panier (session) ---

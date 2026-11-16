@@ -6,6 +6,7 @@ use App\Domain\Merchant\GoogleProductMapper;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductImage;
+use App\Support\Seo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
@@ -109,6 +110,7 @@ class StoreController extends Controller
             'topRated' => $topRated->isNotEmpty() ? $topRated : $bestSellers,
             'dealProducts' => $dealProducts->isNotEmpty() ? $dealProducts : $bestSellers,
             'shopCategories' => $shopCategories,
+            'canonical' => Seo::absolute('/'),
         ]);
     }
 
@@ -531,6 +533,8 @@ class StoreController extends Controller
             'totalPages' => $products->lastPage(),
         ];
 
+        $path = $key ? '/'.ltrim($key, '/') : '/'.ltrim(request()->path(), '/');
+
         return view('category', [
             'metaTitle' => $title,
             'h1' => $h1,
@@ -540,6 +544,8 @@ class StoreController extends Controller
             'filters' => $key === null ? '' : $this->filtersHtml($key),
             'moreKey' => $key,
             'moreScript' => $key === null ? '' : $this->moreScript($key, $filtro),
+            'canonical' => Seo::absolute($path),
+            'robots' => Seo::robotsContent(),
         ]);
     }
 
@@ -811,7 +817,7 @@ HTML;
         return view('product', [
             'metaTitle' => $product->name.' | DFP Interiores',
             'metaDescription' => Str::limit($short !== '' ? $short : $product->name, 155),
-            'canonical' => $offer->link,
+            'canonical' => Seo::absolute('/'.ltrim((string) $product->slug, '/')),
             'schema' => $offer->toJsonLd(),
             'offer' => $offer,
             'dataLayer' => $dataLayer,

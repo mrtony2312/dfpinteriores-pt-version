@@ -10,15 +10,15 @@
 
     <link href="/assets/css/normalize.css" rel="stylesheet">
     <meta charset="UTF-8">
-    <meta name="googlebot" content="index, follow">
-    <meta name="robots" content="INDEX,FOLLOW">
+    <meta name="googlebot" content="{{ $robots ?? 'index, follow' }}">
+    <meta name="robots" content="{{ $robots ?? 'index, follow' }}">
     <meta name="theme-color" content="#e5007d">
-    <link rel="dns-prefetch" href="http://fonts.googleapis.com/">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com/">
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
-    <link rel="dns-prefetch" href="http://connect.facebook.net/">
+    <link rel="dns-prefetch" href="https://connect.facebook.net/">
     
-    <link rel="dns-prefetch" href="http://cdn.jsdelivr.net/">
-    <link rel="canonical" href="{{ $canonical ?? url()->current() }}">
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net/">
+    <link rel="canonical" href="{{ $canonical }}">
 
 
 
@@ -26,7 +26,8 @@
 
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="alternate" href="/" hreflang="pt-pt" />
+    <link rel="alternate" href="{{ $canonical }}" hreflang="pt-PT" />
+    <link rel="alternate" href="{{ $canonical }}" hreflang="x-default" />
     {{-- Favicons DFP Interiores --}}
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32.png?v=3">
     <link rel="icon" type="image/png" sizes="192x192" href="/assets/images/favicon-192.png?v=3">
@@ -51,8 +52,11 @@
         a.Wishlist.is-active svg { fill: #e5007d; stroke: #e5007d; }
     </style>
     <link rel="stylesheet" href="/assets/css/shipping-marquee.css?v=2">
-
-
+    <link rel="stylesheet" href="/omniva/fonts/fonts.css">
+    <link rel="stylesheet" href="/omniva/icon/icomoon/style.css">
+    <link rel="stylesheet" href="/omniva/css/swiper-bundle.min.css">
+    <link rel="stylesheet" href="/omniva/css/styles.css">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Place this data between the <head> tags of your website -->
     <title>@yield('title', 'DFP Interiores')</title>
@@ -133,7 +137,7 @@
     <link href="/assets/css/pt/feira.css?id=2" rel="stylesheet">
     <link href="/assets/css/shop.css?v=16" rel="stylesheet">
     <link rel="stylesheet" href="/assets/css/footer-classic.css?v=3">
-    <link rel="stylesheet" href="/assets/css/site-nav.css?v=5">
+    <link rel="stylesheet" href="/assets/css/site-nav.css?v=6">
 
 
     <style>
@@ -151,6 +155,7 @@
 </head>
 
 <body>
+    @include('partials.site-nav')
     @verbatim
 
 
@@ -1374,8 +1379,6 @@
                 <div class="Body">
                 @endverbatim
 
-                @include('partials.shipping-marquee')
-
                 @yield('content')
 
                 @verbatim
@@ -1902,6 +1905,26 @@
         </div>
     @endverbatim
     @stack('scripts')
+<script src="/omniva/js/plugin/swiper-bundle.min.js"></script>
+<script>
+(function () {
+    if (typeof Swiper === 'undefined') return;
+    document.querySelectorAll('.swiper-topbar').forEach(function (el) {
+        if (el.swiper) return;
+        var main = el.closest('.tf-btn-swiper-main');
+        new Swiper(el, {
+            loop: true,
+            autoplay: { delay: 3500, disableOnInteraction: false },
+            speed: 1500,
+            allowTouchMove: false,
+            navigation: main ? {
+                prevEl: main.querySelector('.nav-prev-swiper'),
+                nextEl: main.querySelector('.nav-next-swiper')
+            } : undefined
+        });
+    });
+})();
+</script>
 </body>
 
 </html>

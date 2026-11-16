@@ -6,6 +6,7 @@ use App\Domain\Merchant\MerchantPolicy;
 use App\Models\Category;
 use App\Services\CartService;
 use App\Services\WishlistService;
+use App\Support\Seo;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
@@ -42,9 +43,10 @@ class AppServiceProvider extends ServiceProvider
                 'authUser' => auth()->user(),
                 'organizationSchema' => MerchantPolicy::organizationSchema(),
                 'merchantDelivery' => MerchantPolicy::deliveryCopy(),
+                'robots' => Seo::robotsContent(),
             ]);
             if (! $view->offsetExists('canonical')) {
-                $view->with('canonical', url()->current());
+                $view->with('canonical', Seo::canonicalForRequest());
             }
 
             if (! Schema::hasTable('categories')) {
