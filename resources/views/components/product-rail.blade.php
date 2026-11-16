@@ -1,4 +1,7 @@
-@props(['title', 'tabs'])
+@props(['title', 'tabs' => null])
+@php
+    $tabs = collect($tabs ?? []);
+@endphp
 @if ($tabs->isNotEmpty())
 <div class="descontos70">
     <div class="container">

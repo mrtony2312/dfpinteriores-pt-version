@@ -277,7 +277,7 @@
 @endverbatim
 
 {{-- Rail dynamique : remplace les 72 cartes figées du miroir --}}
-<x-product-rail title="Descontos até 70%" :tabs="$descTabs" />
+<x-product-rail title="Descontos até 70%" :tabs="$descTabs ?? collect()" />
 
 {{-- Tuiles catégories + bannières secondaires : design officiel, statique --}}
 @verbatim
