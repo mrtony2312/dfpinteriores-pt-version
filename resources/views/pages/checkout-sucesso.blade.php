@@ -9,15 +9,33 @@
     <p>A sua encomenda <strong>{{ $order->ref }}</strong> foi registada. Enviámos a confirmação para {{ $order->email }}.</p>
 
     <div class="ref-box">
-        @if ($order->payment_method === 'MULTIBANCO')
-            <div class="row"><span>Entidade</span><span>{{ $mbEntity }}</span></div>
-            <div class="row"><span>Referência</span><span>{{ $mbRef }}</span></div>
-            <div class="row"><span>Montante</span><span>{{ number_format((float) $order->total, 2, ',', ' ') }}€</span></div>
-            <p style="font-size:12px;color:#999;margin-top:10px;">Pague numa caixa Multibanco ou no homebanking nas próximas 72h.</p>
+        <div class="row"><span>Método</span><span>{{ $payment[$order->payment_method]['label'] ?? 'Transferência bancária' }}</span></div>
+        @if ($bank['holder'])
+            <div class="row"><span>Titular</span><span>{{ $bank['holder'] }}</span></div>
+        @endif
+        @if ($bank['bank_name'])
+            <div class="row"><span>Banco</span><span>{{ $bank['bank_name'] }}</span></div>
+        @endif
+        @if ($bank['iban'])
+            <div class="row"><span>IBAN</span><span><strong>{{ $bank['iban'] }}</strong></span></div>
+        @endif
+        @if ($bank['bic'])
+            <div class="row"><span>BIC/SWIFT</span><span>{{ $bank['bic'] }}</span></div>
+        @endif
+        @if ($bank['nif'])
+            <div class="row"><span>NIF</span><span>{{ $bank['nif'] }}</span></div>
+        @endif
+        <div class="row"><span>Montante</span><span>{{ number_format((float) $order->total, 2, ',', ' ') }}€</span></div>
+        <div class="row"><span>Descritivo</span><span><strong>{{ $order->ref }}</strong></span></div>
+        @if ($order->transfer_proof_name)
+            <div class="row"><span>Comprovativo</span><span>{{ $order->transfer_proof_name }}</span></div>
+            <p style="font-size:12px;color:#999;margin-top:10px;">
+                O comprovativo foi enviado por email com a confirmação da encomenda.
+            </p>
         @else
-            <div class="row"><span>MB WAY</span><span>{{ $order->phone }}</span></div>
-            <div class="row"><span>Montante</span><span>{{ number_format((float) $order->total, 2, ',', ' ') }}€</span></div>
-            <p style="font-size:12px;color:#999;margin-top:10px;">Vai receber um pedido de pagamento na app MB WAY.</p>
+            <p style="font-size:12px;color:#999;margin-top:10px;">
+                Faça a transferência com a referência da encomenda no descritivo. Processamos assim que o pagamento for confirmado.
+            </p>
         @endif
     </div>
 

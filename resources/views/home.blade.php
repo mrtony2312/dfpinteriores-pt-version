@@ -1,520 +1,194 @@
-@extends('layouts.app')
+@extends('layouts.omniva')
 
 @section('title', 'DFP Interiores — Sofás e Mobiliário para a sua casa')
 
-@push('mods-css')
-<link href="/assets/css/pt/mods/home.css" rel="stylesheet">
-@endpush
-
 @section('content')
-{{-- Bloc hero (carrousel promo + vidéo) : design officiel, statique --}}
-@verbatim
+{{-- Carrousel promo juste après le header --}}
+@include('partials.home-promo-slider')
 
-                    
-<div class="Home clearfix">
-  <div class="FundoBanner">
-    <div class="Banner" >
-      
-        <div id="MainBanner" class="owl-carousel">
-                    <div class="item  active ">
-            <a href="/lojas" >
-              <picture>
-                
-                <source
-                  media="(min-width: 769px)"
-                  srcset="/media/banners/matosinhos_desktop.avif"
-                  type="image/avif"
-                />
-                
-                <source
-                  media="(min-width: 769px)"
-                  srcset="/media/banners/matosinhos_desktop.webp"
-                  type="image/webp"
-                />
-                
-                
-                <source
-                  media="(max-width: 768px)"
-                  srcset="/media/banners/matosinhos_mobile.avif"
-                  type="image/avif"
-                />
-                
-                <source
-                  media="(max-width: 768px)"
-                  srcset="/media/banners/matosinhos_mobile.webp"
-                  type="image/webp"
-                />
-                <source
-                  media="(max-width: 768px)"
-                  srcset="/media/banners/matosinhos_mobile.jpg"
-                />
-
-                <img
-                  style="width: 100%;"
-                  src="/media/banners/matosinhos_desktop.jpg"
-                  alt="Banner Feira em Festa"
-                   fetchpriority="high" loading="eager"                 />
-              </picture>
-            </a>
-          </div>
-                    <div class="item ">
-            <a href="/descontos70" >
-              <picture>
-                
-                <source
-                  media="(min-width: 769px)"
-                  srcset="/media/banners/novos_saldos_desktop_.avif"
-                  type="image/avif"
-                />
-                
-                <source
-                  media="(min-width: 769px)"
-                  srcset="/media/banners/novos_saldos_desktop_.webp"
-                  type="image/webp"
-                />
-                
-                
-                <source
-                  media="(max-width: 768px)"
-                  srcset="/media/banners/novos_saldos_mobile.avif"
-                  type="image/avif"
-                />
-                
-                <source
-                  media="(max-width: 768px)"
-                  srcset="/media/banners/novos_saldos_mobile.webp"
-                  type="image/webp"
-                />
-                <source
-                  media="(max-width: 768px)"
-                  srcset="/media/banners/novos_saldos_mobile.jpg"
-                />
-
-                <img
-                  style="width: 100%;"
-                  src="/media/banners/novos_saldos_desktop_.jpg"
-                  alt="Banner Saldos_"
-                   loading="lazy"                 />
-              </picture>
-            </a>
-          </div>
-                    <div class="item ">
-            <a href="/procura/pikolin" >
-              <picture>
-                
-                <source
-                  media="(min-width: 769px)"
-                  srcset="/media/banners/pack_100_desconto.avif"
-                  type="image/avif"
-                />
-                
-                <source
-                  media="(min-width: 769px)"
-                  srcset="/media/banners/pack_100_desconto.webp"
-                  type="image/webp"
-                />
-                
-                
-                <source
-                  media="(max-width: 768px)"
-                  srcset="/media/banners/pack_100_desconto_mobile.avif"
-                  type="image/avif"
-                />
-                
-                <source
-                  media="(max-width: 768px)"
-                  srcset="/media/banners/pack_100_desconto_mobile.webp"
-                  type="image/webp"
-                />
-                <source
-                  media="(max-width: 768px)"
-                  srcset="/media/banners/pack_100_desconto_mobile.jpg"
-                />
-
-                <img
-                  style="width: 100%;"
-                  src="/media/banners/pack_100_desconto.jpg"
-                  alt="Banner 100€"
-                   loading="lazy"                 />
-              </picture>
-            </a>
-          </div>
-                    <div class="item ">
-            <a href="/descontos70" >
-              <picture>
-                
-                <source
-                  media="(min-width: 769px)"
-                  srcset="/media/banners/desktop_scalapay.avif"
-                  type="image/avif"
-                />
-                
-                <source
-                  media="(min-width: 769px)"
-                  srcset="/media/banners/desktop_scalapay.webp"
-                  type="image/webp"
-                />
-                
-                
-                <source
-                  media="(max-width: 768px)"
-                  srcset="/media/banners/mobile_scalapay.avif"
-                  type="image/avif"
-                />
-                
-                <source
-                  media="(max-width: 768px)"
-                  srcset="/media/banners/mobile_scalapay.webp"
-                  type="image/webp"
-                />
-                <source
-                  media="(max-width: 768px)"
-                  srcset="/media/banners/mobile_scalapay.jpg"
-                />
-
-                <img
-                  style="width: 100%;"
-                  src="/media/banners/desktop_scalapay.jpg"
-                  alt="Banner Scalapay"
-                   loading="lazy"                 />
-              </picture>
-            </a>
-          </div>
-                    <div class="item ">
-            <a href="/lojas" >
-              <picture>
-                
-                <source
-                  media="(min-width: 769px)"
-                  srcset="/media/banners/cozinhas_desktop.avif"
-                  type="image/avif"
-                />
-                
-                <source
-                  media="(min-width: 769px)"
-                  srcset="/media/banners/cozinhas_desktop.webp"
-                  type="image/webp"
-                />
-                
-                
-                <source
-                  media="(max-width: 768px)"
-                  srcset="/media/banners/cozinhas_mobiel.avif"
-                  type="image/avif"
-                />
-                
-                <source
-                  media="(max-width: 768px)"
-                  srcset="/media/banners/cozinhas_mobiel.webp"
-                  type="image/webp"
-                />
-                <source
-                  media="(max-width: 768px)"
-                  srcset="/media/banners/cozinhas_mobiel.jpg"
-                />
-
-                <img
-                  style="width: 100%;"
-                  src="/media/banners/cozinhas_desktop.jpg"
-                  alt="Banner Cozinas"
-                   loading="lazy"                 />
-              </picture>
-            </a>
-          </div>
-                    <div class="item ">
-            <a href="/" >
-              <picture>
-                
-                <source
-                  media="(min-width: 769px)"
-                  srcset="/media/banners/cofidis_desktop.avif"
-                  type="image/avif"
-                />
-                
-                <source
-                  media="(min-width: 769px)"
-                  srcset="/media/banners/cofidis_desktop.webp"
-                  type="image/webp"
-                />
-                
-                
-                <source
-                  media="(max-width: 768px)"
-                  srcset="/media/banners/cofidis_mobile.avif"
-                  type="image/avif"
-                />
-                
-                <source
-                  media="(max-width: 768px)"
-                  srcset="/media/banners/cofidis_mobile.webp"
-                  type="image/webp"
-                />
-                <source
-                  media="(max-width: 768px)"
-                  srcset="/media/banners/cofidis_mobile.jpg"
-                />
-
-                <img
-                  style="width: 100%;"
-                  src="/media/banners/cofidis_desktop.jpg"
-                  alt="Banner Cofidis"
-                   loading="lazy"                 />
-              </picture>
-            </a>
-          </div>
+{{-- Categories avec défilement auto --}}
+<div class="flat-spacing">
+    <div class="container">
+        <div class="sect-heading center spacing-bottom-2 wow fadeInUpBlur">
+            <h3 class="s-title mb-24">Comprar por categoria</h3>
+            <p class="s-desc">Encontre o estilo certo para cada divisão da sua casa.</p>
+        </div>
+        <div dir="ltr" class="swiper tf-swiper" data-preview="6" data-tablet="4" data-mobile-sm="3"
+             data-mobile="2" data-space="16" data-pagination="2" data-pagination-sm="3" data-pagination-md="4"
+             data-pagination-lg="6" data-auto="true" data-loop="true" data-delay="3200" data-speed="800"
+             data-pause-hover="true">
+            <div class="swiper-wrapper">
+                @foreach ($shopCategories as $i => $cat)
+                    <div class="swiper-slide">
+                        <a href="/{{ $cat['slug'] }}" class="category-v02 style-2 hover-img wow fadeInUpBlur">
+                            <div class="cate-image img-style">
+                                <img loading="lazy" width="180" height="180"
+                                     src="{{ $cat['image'] }}"
+                                     alt="{{ $cat['name'] }}"
+                                     onerror="this.onerror=null;this.src='/omniva/images/category/pet/cate-{{ ($i % 5) + 1 }}.jpg'">
+                            </div>
+                            <div class="cate-content">
+                                <p class="cate-name cl-text-main h6 link-underline">{{ $cat['name'] }}</p>
+                                <p class="cate-count text-caption letter-space--1">{{ $cat['count'] }} produtos</p>
+                            </div>
+                        </a>
                     </div>
-      
+                @endforeach
+            </div>
+            <div class="sw-line-default tf-sw-pagination wow fadeIn"></div>
+        </div>
     </div>
-  </div>
+</div>
 
-  	<div class="container" style="text-align:center">
-	<video width="80%" style="margin-top:40px" preload="auto" loop playsinline autoplay muted>
-		<source src="/videos/promo.mp4?v=4" type="video/mp4" />
-	Your browser does not support the video tag.
-	</video>
-		
-		</div>
-@endverbatim
-
-{{-- Rail dynamique : remplace les 72 cartes figées du miroir --}}
-<x-product-rail title="Descontos até 70%" :tabs="$descTabs ?? collect()" />
-
-{{-- Tuiles catégories + bannières secondaires : design officiel, statique --}}
-@verbatim
-<div class="container Categorias">
-    <div class="title">Categorias</div>
-    <div class="list">
-             <div>
-        <a href="/sofas">
-          <img
-            src="images/400-400/categorias/homepage/sofas.png"
-            alt="Sofás"
-          />
-          <div class="nome" style="background-color: ;">
-            Sofás
-          </div>
+{{-- Grid collection --}}
+<div class="themesFlat">
+    <div class="container">
+        <a href="/mobiliario" class="collection-v09 style-v4 hover-img dfp-promo-banner wow fadeInUpBlur d-block">
+            <div class="cls-image img-style">
+                <picture class="dfp-promo-banner__media">
+                    <source type="image/avif" srcset="/media/banners_sec/btn_mobiliario_exclusivo.avif">
+                    <source type="image/webp" srcset="/media/banners_sec/btn_mobiliario_exclusivo.webp">
+                    <img loading="lazy" decoding="async" width="1920" height="621"
+                         src="/media/banners_sec/btn_mobiliario_exclusivo.jpg"
+                         alt="Mobiliário exclusivo">
+                </picture>
+            </div>
         </a>
-      </div>
-              <div>
-        <a href="/sofas-de-canto">
-          <img
-            src="images/400-400/categorias/homepage/sofa_canto.png"
-            alt="Sofás de Canto"
-          />
-          <div class="nome" style="background-color: ;">
-            Sofás de Canto
-          </div>
+    </div>
+</div>
+
+{{-- Deal products --}}
+@if ($dealProducts->isNotEmpty())
+<div class="flat-spacing">
+    <div class="container">
+        <div class="sect-heading center spacing-bottom-2 wow fadeInUpBlur">
+            <h3 class="s-title mb-24">Ofertas da semana</h3>
+            <p class="s-desc">Seleção especial com envio rápido.</p>
+        </div>
+        <div class="tf-grid-layout tf-col-2 md-col-3 xl-col-4 gap-15">
+            @foreach ($dealProducts as $product)
+                <x-omniva.product-card :product="$product" />
+            @endforeach
+        </div>
+    </div>
+</div>
+@endif
+
+{{-- Promo Conforto / Descanso --}}
+<div class="themesFlat">
+    <div class="container">
+        <a href="/mobiliario" class="dfp-promo-banner dfp-promo-banner--wide wow fadeInUpBlur d-block">
+            <div class="cls-image">
+                <picture class="dfp-promo-banner__media">
+                    <source type="image/avif" srcset="/media/banners/emma.avif">
+                    <source type="image/webp" srcset="/media/banners/emma.webp">
+                    <img loading="lazy" decoding="async" width="1200" height="400"
+                         src="/media/banners/emma.jpg" alt="Conforto para todos os dias">
+                </picture>
+            </div>
+            <span class="dfp-promo-banner__cta">
+                Ver os móveis <i class="icon icon-ArrowRightUp fs-12"></i>
+            </span>
         </a>
-      </div>
-              <div>
-        <a href="/chaise-longue">
-          <img
-            src="images/400-400/categorias/homepage/chaise_long.png"
-            alt="Chaise Longue"
-          />
-          <div class="nome" style="background-color: ;">
-            Chaise Longue
-          </div>
-        </a>
-      </div>
-                <div>
-        <a href="/salas-de-jantar">
-          <img
-            src="images/400-400/categorias/homepage/mesas_jantar.png"
-            alt="Salas de Jantar"
-          />
-          <div class="nome" style="background-color: ;">
-            Salas de Jantar
-          </div>
-        </a>
-      </div>
-              <div>
-        <a href="/camas-mobiliario">
-          <img
-            src="images/400-400/categorias/homepage/camas.png"
-            alt="Camas"
-          />
-          <div class="nome" style="background-color: ;">
-            Camas
-          </div>
-        </a>
-      </div>
-              <div>
-        <a href="/moveis-auxiliares">
-          <img
-            src="images/400-400/categorias/homepage/aparadores.png"
-            alt="Móveis auxiliares"
-          />
-          <div class="nome" style="background-color: ;">
-            Móveis auxiliares
-          </div>
-        </a>
-      </div>
-           </div>
-  </div>
-   
 
+    </div>
+</div>
 
+{{-- Testimonials --}}
+<div class="flat-spacing">
+    <div class="container">
+        <div class="sect-heading center spacing-bottom-2 wow fadeInUpBlur">
+            <div class="tf-list gap-10 align-items-center mb-10 justify-content-center">
+                <div class="star-wrap fs-14 style-yellow">
+                    <i class="icon icon-Star"></i><i class="icon icon-Star"></i><i class="icon icon-Star"></i>
+                    <i class="icon icon-Star"></i><i class="icon icon-Star"></i>
+                </div>
+                <span class="text-bg-22 fw-medium text-caption lh-xl-28">Clientes satisfeitos em todo o país</span>
+            </div>
+            <h3 class="s-title mb-24">Opiniões dos clientes</h3>
+            <p class="s-desc">Qualidade, entrega rápida e apoio próximo.</p>
+        </div>
+        <div dir="ltr" class="swiper tf-swiper" data-preview="3" data-tablet="3" data-mobile-sm="2"
+             data-mobile="1" data-space="14" data-pagination="1" data-pagination-sm="2" data-pagination-md="3"
+             data-pagination-lg="3">
+            <div class="swiper-wrapper">
+                @foreach ([
+                    ['name' => 'Ana Sousa', 'text' => 'Sofá excelente, muito confortável. Entrega rápida e equipa simpática.'],
+                    ['name' => 'Miguel Costa', 'text' => 'Boa qualidade/preço. O processo de compra foi simples e transparente.'],
+                    ['name' => 'Rita Mendes', 'text' => 'Mobiliário impecável. Recomendo a DFP Interiores sem hesitação.'],
+                    ['name' => 'João Alves', 'text' => 'Comprei um pack de quarto e ficou perfeito. Apoio ao cliente top.'],
+                ] as $rev)
+                    <div class="swiper-slide">
+                        <div class="testimonial-v05 wow fadeInUpBlur">
+                            <div class="star-wrap style-yellow">
+                                <i class="icon icon-Star2 fs-14"></i><i class="icon icon-Star2 fs-14"></i>
+                                <i class="icon icon-Star2 fs-14"></i><i class="icon icon-Star2 fs-14"></i>
+                                <i class="icon icon-Star2 fs-14"></i>
+                            </div>
+                            <div class="tes-author">
+                                <a href="#" class="name cl-text-main fw-medium link-underline">{{ $rev['name'] }}</a>
+                                <div class="check-verified">
+                                    <img loading="lazy" width="16" height="16" src="/omniva/icon/png/verified.png" alt="">
+                                    <span class="text-caption fw-medium">Verificado</span>
+                                </div>
+                            </div>
+                            <p class="tes-text">"{{ $rev['text'] }}"</p>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+            <div class="sw-dot-default tf-sw-pagination wow fadeInUp"></div>
+        </div>
+    </div>
+</div>
 
-  
-  <div class="container">
-
-        <a style="display: block; margin-bottom: 20px;" href="/mobiliario-de-exterior" >
-      <picture>
-        <source
-          media="(min-width: 769px)"
-          srcset="/media/banners_sec/btn_mobiliario_exterior.avif"
-          type="image/avif"
-        />
-        
-        <source
-          media="(min-width: 769px)"
-          srcset="/media/banners_sec/btn_mobiliario_exterior.webp"
-          type="image/webp"
-        />
-        
-        
-        <source
-          media="(max-width: 768px)"
-          srcset="/media/banners_sec/btn_mobiliario_exterior.avif"
-          type="image/avif"
-        />
-        
-        <source
-          media="(max-width: 768px)"
-          srcset="/media/banners_sec/btn_mobiliario_exterior.webp"
-          type="image/webp"
-        />
-        
-
-        <img
-          style="width: 100%;"
-          src="/media/banners_sec/btn_mobiliario_exterior.jpg"
-          alt="Sec Mob. Exterior"
-          loading="lazy"
-        />
-      </picture>
-    </a>
-        <a style="display: block; margin-bottom: 20px;" href="/procura/emma" >
-      <picture>
-        <source
-          media="(min-width: 769px)"
-          srcset="/media/banners/emma.avif"
-          type="image/avif"
-        />
-        
-        <source
-          media="(min-width: 769px)"
-          srcset="/media/banners/emma.webp"
-          type="image/webp"
-        />
-        
-        
-        <source
-          media="(max-width: 768px)"
-          srcset="/media/banners/emma.avif"
-          type="image/avif"
-        />
-        
-        <source
-          media="(max-width: 768px)"
-          srcset="/media/banners/emma.webp"
-          type="image/webp"
-        />
-        
-
-        <img
-          style="width: 100%;"
-          src="/media/banners/emma.jpg"
-          alt="Sec Emma"
-          loading="lazy"
-        />
-      </picture>
-    </a>
-    
-     </div>
-  
-   
-  
-      
-  
-
-
-
-<div class="container">
-
-        <a style="display: block; margin-bottom: 20px;" href="/mobiliario" >
-      <picture>
-        <source
-          media="(min-width: 769px)"
-          srcset="/media/banners_sec/btn_mobiliario_exclusivo.avif"
-          type="image/avif"
-        />
-        
-        <source
-          media="(min-width: 769px)"
-          srcset="/media/banners_sec/btn_mobiliario_exclusivo.webp"
-          type="image/webp"
-        />
-        
-        
-        <source
-          media="(max-width: 768px)"
-          srcset="/media/banners_sec/btn_mobiliario_exclusivo.avif"
-          type="image/avif"
-        />
-        
-        <source
-          media="(max-width: 768px)"
-          srcset="/media/banners_sec/btn_mobiliario_exclusivo.webp"
-          type="image/webp"
-        />
-
-        <img
-          style="width: 100%;"
-          src="/media/banners_sec/btn_mobiliario_exclusivo.jpg"
-          alt="Sec Mob. Exclusivo"
-          loading="lazy"
-        />
-      </picture>
-    </a>
-        <a style="display: block; margin-bottom: 20px;" href="/packs" >
-      <picture>
-        <source
-          media="(min-width: 769px)"
-          srcset="/media/banners_sec/btn_super_packs.avif"
-          type="image/avif"
-        />
-        
-        <source
-          media="(min-width: 769px)"
-          srcset="/media/banners_sec/btn_super_packs.webp"
-          type="image/webp"
-        />
-        
-        
-        <source
-          media="(max-width: 768px)"
-          srcset="/media/banners_sec/btn_super_packs.avif"
-          type="image/avif"
-        />
-        
-        <source
-          media="(max-width: 768px)"
-          srcset="/media/banners_sec/btn_super_packs.webp"
-          type="image/webp"
-        />
-
-        <img
-          style="width: 100%;"
-          src="/media/banners_sec/btn_super_packs.jpg"
-          alt="Sec. Super Packs"
-          loading="lazy"
-        />
-      </picture>
-    </a>
-    
-     </div>
-@endverbatim
-</div>{{-- ferme .Home.clearfix ouvert dans le bloc hero --}}
+{{-- Box icons --}}
+<div class="flat-spacing-2 position-relative">
+    <span class="br-line fake-class top-0"></span>
+    <div class="container-2">
+        <div dir="ltr" class="swiper tf-swiper" data-preview="4" data-tablet="3" data-mobile-sm="2"
+             data-mobile="1" data-space="15" data-pagination="1" data-pagination-sm="2" data-pagination-md="3"
+             data-pagination-lg="4">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <div class="box-icon_V01 wow fadeInUp" data-wow-delay="0s">
+                        <span class="icon"><i class="icon-Package"></i></span>
+                        <div class="content">
+                            <p class="title h5">Entrega gratuita</p>
+                            <p class="text text-caption cl-text-main">Em todo o Portugal, 1 a 3 dias úteis</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="box-icon_V01 wow fadeInUp" data-wow-delay="0.1s">
+                        <span class="icon"><i class="icon-Return"></i></span>
+                        <div class="content">
+                            <p class="title h5">Devoluções fáceis</p>
+                            <p class="text text-caption cl-text-main">14 dias para devolver com tranquilidade</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="box-icon_V01 wow fadeInUp" data-wow-delay="0.2s">
+                        <span class="icon"><i class="icon-Chating"></i></span>
+                        <div class="content">
+                            <p class="title h5">Apoio ao cliente</p>
+                            <p class="text text-caption cl-text-main">Telefone, email ou WhatsApp</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="box-icon_V01 wow fadeInUp" data-wow-delay="0.3s">
+                        <span class="icon"><i class="icon-Credit"></i></span>
+                        <div class="content">
+                            <p class="title h5">Pagamento seguro</p>
+                            <p class="text text-caption cl-text-main">Multibanco e MB WAY</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="sw-line-default tf-sw-pagination wow fadeInUp"></div>
+        </div>
+    </div>
+</div>
 @endsection

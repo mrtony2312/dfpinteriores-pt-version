@@ -30,25 +30,86 @@ class StoreController extends Controller
 
     public function home()
     {
-        // Bloc « Descontos até 70% » : 3 onglets (comme le site officiel).
-        $descTabs = collect([
-            ['id' => 'sofas', 'label' => 'Sofás', 'slug' => 'sofas'],
-            ['id' => 'mobiliario', 'label' => 'Mobiliário', 'slug' => 'mobiliario'],
-            ['id' => 'descanso', 'label' => 'Descanso', 'slug' => 'descanso'],
-        ])->map(function (array $t) {
-            $cat = Category::where('slug', $t['slug'])->first();
-            $ids = $cat ? $cat->children()->pluck('id')->push($cat->id) : collect();
+        $catalog = fn () => Product::query()
+            ->with('images')
+            ->whereHas('images')
+            ->where('price', '>', 0);
 
-            $t['products'] = $this->baseListingQuery('descontos70')
-                ->when($ids->isNotEmpty(), fn ($q) => $q->where(fn ($w) => $w
+        $bestSellers = $catalog()
+            ->orderByRaw('COALESCE(views_20d, 0) DESC')
+            ->orderByDesc('id')
+            ->limit(8)
+            ->get();
+
+        $onSale = $catalog()
+            ->whereNotNull('price_before')
+            ->whereColumn('price_before', '>', 'price')
+            ->orderByRaw('(price_before - price) / price_before DESC')
+            ->limit(8)
+            ->get();
+
+        $topRated = $catalog()
+            ->whereNotNull('rating')
+            ->orderByDesc('rating')
+            ->orderByDesc('views_20d')
+            ->limit(8)
+            ->get();
+
+        $dealProducts = $catalog()
+            ->where('in_stock', true)
+            ->whereNotNull('price_before')
+            ->whereColumn('price_before', '>', 'price')
+            ->orderByDesc('views_20d')
+            ->limit(8)
+            ->get();
+
+        $shopDefs = [
+            ['slug' => 'sofas', 'label' => 'Sofás'],
+            ['slug' => 'mobiliario', 'label' => 'Mobiliário'],
+            ['slug' => 'decoracao', 'label' => 'Decoração'],
+            ['slug' => 'mobiliario-de-exterior', 'label' => 'Exterior'],
+            ['slug' => 'descanso', 'label' => 'Descanso'],
+            ['slug' => 'chaise-longue', 'label' => 'Chaise longue'],
+        ];
+        $shopCategories = collect($shopDefs)->map(function (array $def) {
+            $cat = Category::where('slug', $def['slug'])->first();
+            if (! $cat) {
+                return null;
+            }
+            $ids = $cat->children()->pluck('id')->push($cat->id);
+            $count = Product::query()
+                ->where('price', '>', 0)
+                ->where(fn ($w) => $w
                     ->whereIn('category_id', $ids)
-                    ->orWhereHas('categories', fn ($c) => $c->whereIn('categories.id', $ids))))
-                ->orderByRaw('COALESCE(views_20d, 0) DESC')->orderByDesc('id')->limit(12)->get();
+                    ->orWhereHas('categories', fn ($c) => $c->whereIn('categories.id', $ids)))
+                ->count();
+            $thumb = Product::query()
+                ->with('images')
+                ->whereHas('images')
+                ->where('price', '>', 0)
+                ->where(fn ($w) => $w
+                    ->whereIn('category_id', $ids)
+                    ->orWhereHas('categories', fn ($c) => $c->whereIn('categories.id', $ids)))
+                ->orderByDesc('views_20d')
+                ->first();
 
-            return $t;
-        })->filter(fn ($t) => $t['products']->isNotEmpty())->values();
+            return [
+                'name' => $def['label'],
+                'slug' => $cat->slug,
+                'count' => $count,
+                'image' => $thumb?->images->first()
+                    ? asset($thumb->images->first()->path)
+                    : '/omniva/images/category/pet/cate-1.jpg',
+            ];
+        })->filter()->values();
 
-        return view('home', ['descTabs' => $descTabs]);
+        return view('home', [
+            'bestSellers' => $bestSellers,
+            'onSale' => $onSale->isNotEmpty() ? $onSale : $bestSellers,
+            'topRated' => $topRated->isNotEmpty() ? $topRated : $bestSellers,
+            'dealProducts' => $dealProducts->isNotEmpty() ? $dealProducts : $bestSellers,
+            'shopCategories' => $shopCategories,
+        ]);
     }
 
     /** Pages institutionnelles -> vue Blade dans resources/views/pages/. */
@@ -225,8 +286,9 @@ class StoreController extends Controller
         if ($colors) {
             $q->where(function ($sub) use ($colors) {
                 foreach ($colors as $c) {
-                    $sub->orWhere('variations', 'like', '%"color":"'.$c.'"%')
-                        ->orWhere('variations', 'like', '%"name":"'.$c.'"%');
+                    $safe = addcslashes((string) $c, '%_\\');
+                    $sub->orWhere('variations', 'like', '%"color":"'.$safe.'"%')
+                        ->orWhere('variations', 'like', '%"name":"'.$safe.'"%');
                 }
             });
         }
@@ -784,9 +846,18 @@ HTML;
      */
     public function image(string $path)
     {
-        $static = public_path('images/'.$path);
-        if (is_file($static)) {
-            return response()->file($static, ['Cache-Control' => 'public, max-age=604800']);
+        // Anti path-traversal : uniquement des segments relatifs sûrs sous public/images.
+        $path = str_replace('\\', '/', $path);
+        if ($path === '' || str_contains($path, "\0") || str_contains($path, '..')) {
+            abort(404);
+        }
+
+        $imagesRoot = realpath(public_path('images'));
+        $staticCandidate = public_path('images/'.$path);
+        $staticReal = is_file($staticCandidate) ? realpath($staticCandidate) : false;
+
+        if ($imagesRoot && $staticReal && str_starts_with($staticReal, $imagesRoot.DIRECTORY_SEPARATOR)) {
+            return response()->file($staticReal, ['Cache-Control' => 'public, max-age=604800']);
         }
 
         // Recherche par nom de fichier (les URLs du front sont /images/<taille>/products/<file>).
@@ -804,7 +875,7 @@ HTML;
 
         // Dernier recours : servir la vraie photo depuis la source si on la connaît
         // (self-heal après un scrape --no-images), sinon placeholder NON caché.
-        if ($img && $img->source_url) {
+        if ($img && $img->source_url && $this->isSafeRemoteImageUrl($img->source_url)) {
             try {
                 $res = Http::withHeaders(['User-Agent' => 'Mozilla/5.0'])
                     ->timeout(15)->get($img->source_url);
@@ -846,5 +917,35 @@ HTML;
             'Content-Type' => 'video/mp4',
             'Cache-Control' => 'public, max-age=604800',
         ]);
+    }
+
+    /**
+     * SSRF guard : uniquement http(s) vers des hôtes publics.
+     */
+    private function isSafeRemoteImageUrl(string $url): bool
+    {
+        $parts = parse_url($url);
+        if (! is_array($parts) || ! isset($parts['scheme'], $parts['host'])) {
+            return false;
+        }
+
+        $scheme = strtolower($parts['scheme']);
+        if (! in_array($scheme, ['http', 'https'], true)) {
+            return false;
+        }
+
+        $host = strtolower($parts['host']);
+        if (in_array($host, ['localhost', '127.0.0.1', '::1', '0.0.0.0'], true)) {
+            return false;
+        }
+
+        $ip = filter_var($host, FILTER_VALIDATE_IP) ? $host : gethostbyname($host);
+        if ($ip && filter_var($ip, FILTER_VALIDATE_IP)) {
+            if (! filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

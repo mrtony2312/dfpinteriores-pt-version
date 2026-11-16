@@ -17,7 +17,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('checkout.place') }}" id="checkoutForm">
+    <form method="POST" action="{{ route('checkout.place') }}" id="checkoutForm" enctype="multipart/form-data">
         @csrf
         <div class="co-grid">
             <div>
@@ -122,11 +122,59 @@
                 <div class="row"><span>Subtotal</span><span>{{ number_format((float) $cart['subtotal'], 2, ',', ' ') }}€</span></div>
                 <div class="row"><span>Portes de envio</span><span>Grátis</span></div>
                 <div class="row total"><span>Total</span><span>{{ number_format((float) $cart['subtotal'], 2, ',', ' ') }}€</span></div>
-                <p style="font-size:13px;color:#555;margin:8px 0 0;">
+                <p style="font-size:13px;color:#555;margin:8px 0 14px;">
                     Envio gratuito para todo o Portugal.<br>
-                    Entrega em 1 a 3 dias úteis (preparação: 1 dia útil).<br>
-                    Pagamento: Referência Multibanco.
+                    Entrega em 1 a 3 dias úteis (preparação: 1 dia útil).
                 </p>
+
+                <div class="co-pay">
+                    <h2>Pagamento</h2>
+                    <label class="opt sel" id="payOptVirement">
+                        <input type="radio" name="payment_method" value="VIREMENT"
+                               {{ old('payment_method', 'VIREMENT') === 'VIREMENT' ? 'checked' : '' }} required>
+                        <div>
+                            <div class="t">{{ $paymentOptions['VIREMENT']['label'] }}</div>
+                            <div class="d">{{ $paymentOptions['VIREMENT']['desc'] }}</div>
+                        </div>
+                    </label>
+                    @error('payment_method') <span class="err">{{ $message }}</span> @enderror
+
+                    <div class="co-bank">
+                        <div class="co-bank-title">Dados para transferência</div>
+                        @if ($bank['holder'] || $bank['iban'])
+                            @if ($bank['holder'])
+                                <div class="co-bank-row"><span>Titular</span><strong>{{ $bank['holder'] }}</strong></div>
+                            @endif
+                            @if ($bank['bank_name'])
+                                <div class="co-bank-row"><span>Banco</span><strong>{{ $bank['bank_name'] }}</strong></div>
+                            @endif
+                            @if ($bank['iban'])
+                                <div class="co-bank-row">
+                                    <span>IBAN</span>
+                                    <strong class="iban">{{ $bank['iban'] }}</strong>
+                                </div>
+                            @endif
+                            @if ($bank['bic'])
+                                <div class="co-bank-row"><span>BIC/SWIFT</span><strong>{{ $bank['bic'] }}</strong></div>
+                            @endif
+                            @if ($bank['nif'])
+                                <div class="co-bank-row"><span>NIF</span><strong>{{ $bank['nif'] }}</strong></div>
+                            @endif
+                            <p class="co-bank-hint">Faça a transferência e anexe o comprovativo abaixo. O ficheiro será enviado por email com a encomenda.</p>
+                        @else
+                            <p class="co-bank-hint">Os dados bancários serão comunicados após a encomenda. Anexe o comprovativo assim que concluir a transferência.</p>
+                        @endif
+                    </div>
+
+                    <div class="co-proof">
+                        <label class="co-proof-label" for="transfer_proof">Comprovativo de transferência</label>
+                        <input type="file" name="transfer_proof" id="transfer_proof" accept=".jpg,.jpeg,.png,.webp,.pdf,image/*,application/pdf" required
+                               class="@error('transfer_proof') is-invalid @enderror">
+                        <p class="co-proof-hint">JPG, PNG, WEBP ou PDF — máx. 5 MB</p>
+                        <p class="co-proof-name" id="transferProofName" hidden></p>
+                        @error('transfer_proof') <span class="err">{{ $message }}</span> @enderror
+                    </div>
+                </div>
 
                 <label class="check-row">
                     <input type="checkbox" name="terms" value="1" {{ old('terms') ? 'checked' : '' }}>
@@ -149,6 +197,20 @@
     if (billingDiff && billingCard) {
         billingDiff.addEventListener('change', function () {
             billingCard.hidden = !billingDiff.checked;
+        });
+    }
+    var proof = document.getElementById('transfer_proof');
+    var proofName = document.getElementById('transferProofName');
+    if (proof && proofName) {
+        proof.addEventListener('change', function () {
+            var file = proof.files && proof.files[0];
+            if (file) {
+                proofName.hidden = false;
+                proofName.textContent = 'Ficheiro: ' + file.name;
+            } else {
+                proofName.hidden = true;
+                proofName.textContent = '';
+            }
         });
     }
 })();

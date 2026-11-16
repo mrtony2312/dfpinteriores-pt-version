@@ -1,0 +1,80 @@
+/* Banderole livraison — sobre, icônes Omniva réelles */
+
+.dfp-shipping-marquee {
+    position: relative;
+    overflow: hidden;
+    color: #fff;
+    background: #e5007d;
+}
+
+.dfp-shipping-marquee__track {
+    display: flex;
+    width: max-content;
+    animation: dfpShippingMarquee 28s linear infinite;
+}
+
+.dfp-shipping-marquee:hover .dfp-shipping-marquee__track {
+    animation-play-state: paused;
+}
+
+.dfp-shipping-marquee__group {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: .65rem 0;
+    white-space: nowrap;
+}
+
+.dfp-shipping-marquee__item {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: .78rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    line-height: 1.2;
+}
+
+.dfp-shipping-marquee__item strong {
+    font-weight: 800;
+    color: #fff;
+}
+
+.dfp-shipping-marquee__icon {
+    font-size: 1rem;
+    line-height: 1;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.dfp-shipping-marquee__sep {
+    color: rgba(255, 255, 255, .7);
+    font-size: .9rem;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+@keyframes dfpShippingMarquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+}
+
+@media (max-width: 767px) {
+    .dfp-shipping-marquee__group {
+        gap: 1rem;
+        padding: .55rem 0;
+    }
+    .dfp-shipping-marquee__item {
+        font-size: .7rem;
+    }
+    .dfp-shipping-marquee__icon {
+        font-size: .9rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dfp-shipping-marquee__track {
+        animation: none !important;
+    }
+}

@@ -1,0 +1,297 @@
+/* Styles partagés de la barre de navigation Omniva (toutes pages) */
+
+.logo-site {
+    max-width: none !important;
+    aspect-ratio: auto !important;
+    align-items: center;
+}
+.logo-site img { max-height: 36px; width: auto; }
+.logo-text {
+    font-family: 'Satoshi', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: .02em;
+    color: #1a1a1a;
+    text-decoration: none;
+    white-space: nowrap;
+    line-height: 1.15;
+    display: inline-flex;
+    align-items: baseline;
+    gap: .28em;
+}
+.logo-text span { color: #c4a484; font-weight: 500; }
+.tf-topbar.bg-dfp { background: #1a1a1a !important; }
+
+@media (max-width: 1199px) {
+    .tf-header .header-inner {
+        padding-top: 10px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #eee;
+    }
+    .tf-header .header-inner_wrap {
+        display: grid !important;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        min-height: 48px;
+        gap: 8px;
+    }
+    .tf-header .header-left {
+        justify-self: start;
+        flex: unset !important;
+    }
+    .tf-header .header-center {
+        justify-self: center;
+        display: flex;
+        justify-content: center;
+        min-width: 0;
+    }
+    .tf-header .header-right {
+        justify-self: end;
+        flex: unset !important;
+    }
+    .tf-header .box-btn-open-menu a,
+    .tf-header .nav-icon-item {
+        width: 42px;
+        height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        color: #1a1a1a;
+        background: transparent;
+        transition: background .2s ease;
+    }
+    .tf-header .box-btn-open-menu a:active,
+    .tf-header .nav-icon-item:active,
+    .tf-header .box-btn-open-menu a:hover,
+    .tf-header .nav-icon-item:hover {
+        background: #f3f3f3;
+    }
+    .tf-header .nav-icon-list {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 2px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+    .tf-header .nav-icon-list > li {
+        display: flex;
+        align-items: center;
+    }
+    .tf-header .nav-icon-item {
+        position: relative;
+    }
+    .tf-header .nav-icon-item .icon,
+    .tf-header .nav-icon-item i {
+        font-size: 20px;
+        line-height: 1;
+    }
+    .tf-header .nav-icon-item .number-order {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        min-width: 16px;
+        height: 16px;
+        padding: 0 4px;
+        border-radius: 999px;
+        background: #e5007d;
+        color: #fff;
+        font-size: 10px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+    }
+    .tf-header .nav-icon-item .number-order:empty,
+    .tf-header .nav-icon-item .number-order.is-zero {
+        display: none;
+    }
+    .logo-text { font-size: 17px; }
+}
+@media (max-width: 575px) {
+    .logo-text { font-size: 15px; }
+    .tf-header .container-full {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+}
+
+.canvas-mb .canvas-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 18px;
+}
+.canvas-mb .canvas-body {
+    padding: 8px 18px 24px;
+}
+.canvas-mb .nav-ul-mb {
+    list-style: none;
+    margin: 0 0 20px;
+    padding: 0;
+}
+.canvas-mb .nav-mb-item + .nav-mb-item {
+    border-top: 1px solid #eee;
+}
+.canvas-mb .mb-menu-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+    color: #1a1a1a;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+}
+.canvas-mb .mb-menu-link:hover { color: #e5007d; }
+.canvas-mb .group-btn {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+.canvas-mb .need-help-wrap {
+    padding-top: 8px;
+    border-top: 1px solid #eee;
+}
+.popup-search .form-search {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+.popup-search .form-search input {
+    flex: 1;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 15px;
+}
+.popup-search .btn-action_submit {
+    width: 48px;
+    border: 0;
+    border-radius: 10px;
+    background: #e5007d;
+    color: #fff;
+}
+
+/* Sur les pages legacy : masquer l'ancienne barre (desktop + mobile) */
+.Site .Header,
+.Site > .site > .Header,
+div.Header {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+}
+
+/* Empilement au-dessus du contenu Vue */
+.dfp-site-nav {
+    position: relative;
+    z-index: 1040;
+    background: transparent;
+}
+
+/* Navbar principale — dégradé rouge marque */
+.dfp-site-nav .tf-header,
+header.tf-header {
+    background: linear-gradient(90deg, #8b0038 0%, #c4005f 28%, #e5007d 55%, #b8006a 78%, #7a002f 100%);
+    box-shadow: 0 2px 14px rgba(139, 0, 56, .28);
+}
+
+.dfp-site-nav .tf-header .header-inner,
+header.tf-header .header-inner {
+    background: transparent;
+    border-bottom: 0 !important;
+}
+
+.dfp-site-nav .logo-text,
+header.tf-header .logo-text {
+    color: #fff;
+}
+
+.dfp-site-nav .logo-text span,
+header.tf-header .logo-text span {
+    color: #ffd6ec;
+}
+
+.dfp-site-nav .box-nav-menu .item-link,
+.dfp-site-nav .box-nav-menu .item-link .text,
+.dfp-site-nav .box-nav-menu .item-link .icon,
+header.tf-header .box-nav-menu .item-link,
+header.tf-header .box-nav-menu .item-link .text,
+header.tf-header .box-nav-menu .item-link .icon {
+    color: #fff !important;
+}
+
+.dfp-site-nav .box-nav-menu .item-link:hover .text,
+.dfp-site-nav .box-nav-menu .item-link:hover .icon,
+header.tf-header .box-nav-menu .item-link:hover .text,
+header.tf-header .box-nav-menu .item-link:hover .icon {
+    color: #ffe6f3 !important;
+}
+
+.dfp-site-nav .nav-icon-item,
+.dfp-site-nav .nav-icon-item .icon,
+.dfp-site-nav .nav-icon-item i,
+.dfp-site-nav .box-btn-open-menu a,
+.dfp-site-nav .box-btn-open-menu .icon,
+header.tf-header .nav-icon-item,
+header.tf-header .nav-icon-item .icon,
+header.tf-header .nav-icon-item i,
+header.tf-header .box-btn-open-menu a,
+header.tf-header .box-btn-open-menu .icon {
+    color: #fff !important;
+}
+
+.dfp-site-nav .nav-icon-item:hover,
+.dfp-site-nav .box-btn-open-menu a:hover,
+header.tf-header .nav-icon-item:hover,
+header.tf-header .box-btn-open-menu a:hover {
+    background: rgba(255, 255, 255, .14) !important;
+}
+
+.dfp-site-nav .nav-icon-item .number-order,
+header.tf-header .nav-icon-item .number-order {
+    background: #fff;
+    color: #c4005f;
+}
+
+/*
+ * Ancien header masqué : le padding-top de .Body (164px dans feira.css)
+ * réservait la place d'une barre fixe. Avec la nav Omniva hors .Body,
+ * ce vide doit disparaître (catalogue / fiches / checkout).
+ */
+.Site .Body,
+#_Global .Body,
+.Body {
+    padding-top: 0 !important;
+}
+
+.breadcrumb {
+    margin-top: 4px !important;
+    margin-bottom: 4px !important;
+}
+
+.breadcrumb > div:first-child {
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+}
+
+/* Moins d'air sous la nav / marquee avant le catalogue */
+#_Global.Site,
+.Site#_Global,
+div.Site {
+    margin-top: -30px !important;
+    padding-top: 0 !important;
+}
+
+#_Global .Body > .breadcrumb:first-child,
+.Body > .breadcrumb {
+    margin-top: 0 !important;
+}

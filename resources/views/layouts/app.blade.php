@@ -50,6 +50,7 @@
         .shop-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
         a.Wishlist.is-active svg { fill: #e5007d; stroke: #e5007d; }
     </style>
+    <link rel="stylesheet" href="/assets/css/shipping-marquee.css?v=2">
 
 
 
@@ -131,6 +132,8 @@
 
     <link href="/assets/css/pt/feira.css?id=2" rel="stylesheet">
     <link href="/assets/css/shop.css?v=16" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/footer-classic.css?v=3">
+    <link rel="stylesheet" href="/assets/css/site-nav.css?v=5">
 
 
     <style>
@@ -1370,6 +1373,8 @@
                 <div class="ResultadosProcura"></div>
                 <div class="Body">
                 @endverbatim
+
+                @include('partials.shipping-marquee')
 
                 @yield('content')
 

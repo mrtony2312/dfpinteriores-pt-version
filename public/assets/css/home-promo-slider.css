@@ -1,0 +1,182 @@
+/* Carrousel promo animé (ancienne home) + bandeaux secondaires */
+
+.dfp-promo-hero {
+    width: 100%;
+    background: #0f0f0f;
+}
+
+.dfp-promo-hero__banner {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    aspect-ratio: 1 / 1;
+    max-height: min(86vh, 820px);
+    margin-inline: auto;
+    background: #c9b08a;
+}
+
+@media (min-width: 992px) {
+    .dfp-promo-hero__banner {
+        aspect-ratio: 16 / 9;
+        max-height: min(78vh, 760px);
+    }
+}
+
+.dfp-promo-hero__slide {
+    display: block;
+    width: 100%;
+    height: 100%;
+    color: inherit;
+    text-decoration: none;
+}
+
+.dfp-promo-hero__slide picture,
+.dfp-promo-hero__slide img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center center;
+    background: #c9b08a;
+}
+
+.dfp-promo-swiper,
+.dfp-promo-swiper .swiper-wrapper,
+.dfp-promo-swiper .swiper-slide {
+    height: 100%;
+}
+
+.dfp-promo-hero__pag {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 14px;
+    z-index: 3;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.dfp-promo-hero__pag .tf-sw-pagination {
+    pointer-events: auto;
+}
+
+.dfp-promo-hero__nav {
+    position: absolute;
+    top: 50%;
+    z-index: 4;
+    transform: translateY(-50%);
+    width: 42px;
+    height: 42px;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .92);
+    color: #111;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .22);
+    transition: transform .2s ease, background .2s ease, opacity .2s ease;
+    opacity: .92;
+}
+
+.dfp-promo-hero__nav:hover {
+    background: #fff;
+    transform: translateY(-50%) scale(1.06);
+    opacity: 1;
+}
+
+.dfp-promo-hero__nav--prev { left: 14px; }
+.dfp-promo-hero__nav--next { right: 14px; }
+
+.dfp-promo-hero__nav .icon {
+    font-size: 18px;
+    line-height: 1;
+}
+
+.dfp-promo-hero__video {
+    padding-top: 28px;
+    padding-bottom: 8px;
+    text-align: center;
+}
+
+.dfp-promo-hero__video video {
+    width: min(100%, 960px);
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    display: inline-block;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, .28);
+}
+
+.dfp-promo-hero__cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    padding-top: 20px;
+    padding-bottom: 28px;
+}
+
+.dfp-promo-hero__card {
+    display: block;
+    overflow: hidden;
+    border-radius: 10px;
+    background: #1a1a1a;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, .18);
+    transition: transform .35s ease, box-shadow .35s ease;
+}
+
+.dfp-promo-hero__card:hover {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, .28);
+}
+
+.dfp-promo-hero__card img {
+    display: block;
+    width: 100%;
+    height: auto;
+    transition: transform .55s ease;
+}
+
+.dfp-promo-hero__card:hover img {
+    transform: scale(1.04);
+}
+
+@media (max-width: 991px) {
+    .dfp-promo-hero__cards {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+}
+
+@media (max-width: 768px) {
+    .dfp-promo-hero__banner {
+        aspect-ratio: 1 / 1;
+    }
+
+    .dfp-promo-hero__nav {
+        width: 36px;
+        height: 36px;
+    }
+
+    .dfp-promo-hero__nav--prev { left: 8px; }
+    .dfp-promo-hero__nav--next { right: 8px; }
+
+    .dfp-promo-hero__video {
+        padding-top: 18px;
+    }
+
+    .dfp-promo-hero__cards {
+        padding-top: 14px;
+        padding-bottom: 18px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dfp-promo-hero__card,
+    .dfp-promo-hero__card img,
+    .dfp-promo-hero__nav {
+        transition: none;
+    }
+}

@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use App\Mail\OrderConfirmation;
 use App\Mail\OrderReceivedAdmin;
 use App\Models\Order;
+use App\Models\SiteSetting;
 use App\Services\CartService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class CheckoutController extends Controller
 {
@@ -20,11 +22,21 @@ class CheckoutController extends Controller
     ];
 
     public const PAYMENT = [
-        'MULTIBANCO' => ['label' => 'Referência Multibanco', 'desc' => 'Pague na caixa MB ou homebanking'],
-        'MBWAY' => ['label' => 'MB WAY', 'desc' => 'Pagamento pelo telemóvel'],
+        'VIREMENT' => [
+            'label' => 'Transferência bancária',
+            'desc' => 'Pagamento por transferência para a conta DFP Interiores',
+        ],
     ];
 
     public function __construct(private CartService $cart) {}
+
+    /**
+     * @return array{holder: string, iban: string, bic: string, bank_name: string, nif: string}
+     */
+    public static function bankDetails(): array
+    {
+        return SiteSetting::current()->bankDetails();
+    }
 
     public function show()
     {
@@ -42,6 +54,8 @@ class CheckoutController extends Controller
                 'email' => old('email', $user->email ?? ''),
                 'phone' => old('phone', $user->phone ?? ''),
             ],
+            'bank' => self::bankDetails(),
+            'paymentOptions' => self::PAYMENT,
         ]);
     }
 
@@ -63,6 +77,8 @@ class CheckoutController extends Controller
             'postal_code' => ['nullable', 'string', 'max:16'],
             'city' => ['required', 'string', 'max:255'],
             'notes' => ['nullable', 'string', 'max:2000'],
+            'payment_method' => ['required', Rule::in(array_keys(self::PAYMENT))],
+            'transfer_proof' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf,webp', 'max:5120'],
             'terms' => ['accepted'],
         ] + ($billingSame ? [] : [
             'billing_name' => ['required', 'string', 'min:2', 'max:255'],
@@ -71,10 +87,15 @@ class CheckoutController extends Controller
             'billing_city' => ['required', 'string', 'max:255'],
         ]);
 
-        $validator = Validator::make($request->all(), $rules);
+        $validator = Validator::make($request->all(), $rules, [
+            'payment_method.required' => 'Selecione o método de pagamento.',
+            'payment_method.in' => 'Método de pagamento inválido.',
+            'transfer_proof.required' => 'Anexe o comprovativo da transferência bancária.',
+            'transfer_proof.mimes' => 'O comprovativo deve ser JPG, PNG, WEBP ou PDF.',
+            'transfer_proof.max' => 'O comprovativo não pode exceder 5 MB.',
+        ]);
 
         if ($validator->fails()) {
-            // toujours revenir sur la page checkout avec erreurs + saisie
             return redirect()->route('checkout')
                 ->withErrors($validator)
                 ->withInput();
@@ -82,12 +103,19 @@ class CheckoutController extends Controller
 
         $data = $validator->validated();
 
-        // Livraison et paiement fixes (plus de choix sur le checkout)
         $shipMethod = 'ENTREGA';
-        $payMethod = 'MULTIBANCO';
+        $payMethod = $data['payment_method'];
         $shipCost = self::SHIPPING[$shipMethod]['cost'];
         $subtotal = (float) $cart['subtotal'];
         $total = $subtotal + $shipCost;
+
+        $proofPath = null;
+        $proofName = null;
+        if ($request->hasFile('transfer_proof')) {
+            $file = $request->file('transfer_proof');
+            $proofName = $file->getClientOriginalName();
+            $proofPath = $file->store('transfer-proofs/'.now()->format('Y/m'), 'local');
+        }
 
         $order = Order::create([
             'ref' => $this->makeRef(),
@@ -112,6 +140,8 @@ class CheckoutController extends Controller
             'total' => $total,
             'status' => 'AGUARDAR',
             'items_snapshot' => $cart['items'],
+            'transfer_proof_path' => $proofPath,
+            'transfer_proof_name' => $proofName,
         ]);
 
         foreach ($cart['items'] as $it) {
@@ -128,7 +158,6 @@ class CheckoutController extends Controller
         $this->cart->clear();
         session(['last_order_ref' => $order->ref]);
 
-        // Emails : confirmation client + notification admin (n'interrompt pas la commande)
         try {
             Mail::to($order->email)->send(new OrderConfirmation($order));
             Mail::to(config('mail.admin_address'))->send(new OrderReceivedAdmin($order));
@@ -143,15 +172,13 @@ class CheckoutController extends Controller
     {
         $order = Order::with('items')->where('ref', $ref)->firstOrFail();
 
-        // n'affiche le détail que si la commande vient d'être passée dans cette session
         abort_unless(session('last_order_ref') === $ref || auth()->id() === $order->user_id, 403);
 
         return view('pages.checkout-sucesso', [
             'order' => $order,
             'shipping' => self::SHIPPING,
             'payment' => self::PAYMENT,
-            'mbRef' => str_pad((string) random_int(0, 999999999), 9, '0', STR_PAD_LEFT),
-            'mbEntity' => '21'.random_int(100, 999),
+            'bank' => self::bankDetails(),
         ]);
     }
 
