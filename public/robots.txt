@@ -10,6 +10,17 @@ Disallow: /carrinho/
 Disallow: /cliente
 Disallow: /wishlist
 Disallow: /procura
+Disallow: /admin
+Disallow: /_more
+# Paramètres de filtres catalogue (doublons GSC)
+Disallow: /*?*preco=
+Disallow: /*?*largura=
+Disallow: /*?*altura=
+Disallow: /*?*comprimento=
+Disallow: /*?*sort=
+Disallow: /*?*css=
+Disallow: /*?*p=
+Disallow: /*?*page=
 
 User-agent: Googlebot
 Allow: /
@@ -18,6 +29,20 @@ Allow: /assets
 Allow: /images
 Allow: /feeds
 Allow: /feed
+Disallow: /carrinho
+Disallow: /cliente
+Disallow: /wishlist
+Disallow: /procura
+Disallow: /admin
+Disallow: /_more
+Disallow: /*?*preco=
+Disallow: /*?*largura=
+Disallow: /*?*altura=
+Disallow: /*?*comprimento=
+Disallow: /*?*sort=
+Disallow: /*?*css=
+Disallow: /*?*p=
+Disallow: /*?*page=
 
 User-agent: Googlebot-Image
 Allow: /

@@ -6,7 +6,11 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'DFP Interiores')</title>
     <meta name="description" content="@yield('meta_description', 'DFP Interiores: Especialistas em Sofás e Mobiliário para a sua casa. Qualidade, design moderno e os melhores preços.')">
-    <link rel="canonical" href="{{ $canonical ?? url()->current() }}">
+    <meta name="robots" content="{{ $robots ?? 'index, follow' }}">
+    <meta name="googlebot" content="{{ $robots ?? 'index, follow' }}">
+    <link rel="canonical" href="{{ $canonical }}">
+    <link rel="alternate" href="{{ $canonical }}" hreflang="pt-PT" />
+    <link rel="alternate" href="{{ $canonical }}" hreflang="x-default" />
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32.png?v=3">
 
     <link rel="stylesheet" href="/omniva/fonts/fonts.css">
