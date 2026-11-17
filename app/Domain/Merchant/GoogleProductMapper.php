@@ -105,7 +105,7 @@ final class GoogleProductMapper
     public function exclusionReason(Product $product): ?string
     {
         $price = (float) $product->price;
-        $min = (float) config('feed.min_price', 80);
+        $min = (float) config('feed.min_price', 100);
         $images = $product->relationLoaded('images')
             ? $product->images
             : $product->images()->get();

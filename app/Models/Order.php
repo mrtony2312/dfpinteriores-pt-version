@@ -7,7 +7,15 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Order extends Model
 {
-    protected $guarded = [];
+    /** @var list<string> */
+    protected $fillable = [
+        'ref', 'user_id', 'name', 'email', 'phone', 'nif',
+        'address', 'postal_code', 'city', 'billing_same',
+        'billing_name', 'billing_address', 'billing_postal_code', 'billing_city',
+        'notes', 'shipping_method', 'shipping_cost', 'payment_method',
+        'subtotal', 'total', 'status', 'items_snapshot',
+        'transfer_proof_path', 'transfer_proof_name',
+    ];
 
     protected $casts = [
         'items_snapshot' => 'array',

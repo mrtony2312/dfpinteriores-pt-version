@@ -5,12 +5,16 @@ namespace Database\Seeders;
 use App\Models\SiteSetting;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+<<<<<<< Updated upstream
 use Illuminate\Support\Facades\Hash;
+=======
+>>>>>>> Stashed changes
 
 class AdminUserSeeder extends Seeder
 {
     public function run(): void
     {
+<<<<<<< Updated upstream
         $email = (string) env('ADMIN_EMAIL', 'admin@dfpinteriores.com');
         $password = (string) env('ADMIN_PASSWORD', 'AdminDFP2026!');
 
@@ -40,5 +44,19 @@ class AdminUserSeeder extends Seeder
             $this->command->info("Admin prêt : {$email}");
             $this->command->info('Login : /admin/login  →  Dados bancários : /admin/banco');
         }
+=======
+        $user = User::query()->firstOrNew([
+            'email' => env('ADMIN_EMAIL', 'admin@dfpinteriores.com'),
+        ]);
+
+        $user->fill([
+            'name' => 'Administrador',
+            'password' => env('ADMIN_PASSWORD', 'AdminDFP2026!'),
+        ]);
+        $user->save();
+        $user->grantAdmin();
+
+        SiteSetting::current();
+>>>>>>> Stashed changes
     }
 }

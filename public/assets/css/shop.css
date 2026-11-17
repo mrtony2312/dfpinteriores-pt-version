@@ -219,6 +219,29 @@
 .CheckoutPage .co-errors { background: #ffe9e9; border: 1px solid #f3b4b4; color: #b71c1c; border-radius: 8px; padding: 12px 14px; margin-bottom: 18px; font-size: 13px; }
 .CheckoutPage .check-row { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; margin-top: 6px; }
 
+.CheckoutPage .co-pay { margin: 16px 0 8px; padding-top: 8px; border-top: 1px solid var(--sl-line); }
+.CheckoutPage .co-pay h2 { font-size: 14px; text-transform: uppercase; letter-spacing: .06em; color: #666; margin: 0 0 12px; }
+.CheckoutPage .co-bank {
+    border: 1px dashed #e5a8c8; background: #fff8fb; border-radius: 10px;
+    padding: 14px; margin: 4px 0 12px;
+}
+.CheckoutPage .co-bank-title { font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--sl-pink); margin-bottom: 10px; }
+.CheckoutPage .co-bank-row { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; margin: 6px 0; }
+.CheckoutPage .co-bank-row span { color: #777; }
+.CheckoutPage .co-bank-row .iban { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: .02em; text-align: right; word-break: break-all; }
+.CheckoutPage .co-bank-hint { font-size: 12px; color: #777; margin: 10px 0 0; line-height: 1.45; }
+.CheckoutPage .co-proof { margin: 12px 0 4px; }
+.CheckoutPage .co-proof-label {
+    display: block; font-size: 12px; font-weight: 700; text-transform: uppercase; color: #777; margin-bottom: 8px;
+}
+.CheckoutPage .co-proof input[type="file"] {
+    width: 100%; border: 1px dashed #e5a8c8; border-radius: 10px; padding: 14px 12px;
+    background: #fff; font-size: 13px; cursor: pointer;
+}
+.CheckoutPage .co-proof input[type="file"].is-invalid { border-color: #d21313; background: #fff5f5; }
+.CheckoutPage .co-proof-hint { font-size: 12px; color: #888; margin: 6px 0 0; }
+.CheckoutPage .co-proof-name { font-size: 13px; font-weight: 600; color: #2e7d32; margin: 8px 0 0; }
+
 /* ================= Confirmation ================= */
 .OrderDone { max-width: 640px; margin: 0 auto; padding: 60px 16px 90px; text-align: center; }
 .OrderDone .tick {

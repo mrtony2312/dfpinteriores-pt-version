@@ -24,7 +24,7 @@ return [
     | Livraison : gratuite dans tout le Portugal.
     | Préparation : 1 jour. Transit : 0–2 jours. Total client : 1–3 jours.
     */
-    'min_price' => 80.00,
+    'min_price' => 100.00,
     'free_shipping' => true,
     'target_items' => 980,
 

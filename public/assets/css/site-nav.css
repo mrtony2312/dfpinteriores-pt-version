@@ -194,6 +194,7 @@ div.Header {
 .dfp-site-nav {
     position: relative;
     z-index: 1040;
+<<<<<<< Updated upstream
     background: transparent;
 }
 
@@ -260,6 +261,13 @@ header.tf-header .box-btn-open-menu a:hover {
 header.tf-header .nav-icon-item .number-order {
     background: #fff;
     color: #c4005f;
+=======
+    background: #fff;
+}
+
+.dfp-site-nav .tf-header {
+    background: #fff;
+>>>>>>> Stashed changes
 }
 
 /*

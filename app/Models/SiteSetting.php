@@ -36,6 +36,11 @@ class SiteSetting extends Model
     }
 
     /**
+<<<<<<< Updated upstream
+=======
+     * Valeurs telles qu'enregistrées en admin (sans fallback .env après édition).
+     *
+>>>>>>> Stashed changes
      * @return array{holder: string, iban: string, bic: string, bank_name: string, nif: string}
      */
     public function bankDetails(): array

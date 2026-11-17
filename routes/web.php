@@ -32,6 +32,24 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/login', [AdminAuthController::class, 'login'])->name('login.submit');
     });
     Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
+<<<<<<< Updated upstream
+=======
+
+    Route::middleware('admin')->group(function () {
+        Route::get('/', fn () => redirect()->route('admin.bank.edit'));
+        Route::get('/banco', [BankSettingController::class, 'edit'])->name('bank.edit');
+        Route::put('/banco', [BankSettingController::class, 'update'])->name('bank.update');
+        Route::delete('/banco', [BankSettingController::class, 'destroy'])->name('bank.destroy');
+    });
+});
+
+// Sitemap XML : pages institutionnelles + fiches produit publiées (avec image).
+Route::get('/sitemap.xml', function () {
+    $base = rtrim(config('feed.base_url'), '/');
+    $static = ['', '/lojas', '/contactos', '/apoioaocliente', '/ajuda/termos-e-condicoes',
+        '/ajuda/politica-privacidade', '/ajuda/politica-de-cookies', '/ajuda/politica-de-envios',
+        '/ajuda/politica-de-devolucoes', '/ajuda/resolucao-alternativa-litigios'];
+>>>>>>> Stashed changes
 
     Route::middleware('admin')->group(function () {
         Route::get('/', fn () => redirect()->route('admin.bank.edit'));
@@ -119,9 +137,11 @@ Route::get('/apoioaocliente', [SupportController::class, 'show'])->name('support
 Route::post('/apoioaocliente', [SupportController::class, 'submit'])->name('support.submit');
 
 // --- Compte client ---
-Route::post('/cliente/login', [AuthController::class, 'login'])->name('cliente.login');
-Route::post('/cliente/registo', [AuthController::class, 'register'])->name('cliente.registo');
-Route::post('/cliente/register', [AuthController::class, 'register']);
+Route::middleware('throttle:20,1')->group(function () {
+    Route::post('/cliente/login', [AuthController::class, 'login'])->name('cliente.login');
+    Route::post('/cliente/registo', [AuthController::class, 'register'])->name('cliente.registo');
+    Route::post('/cliente/register', [AuthController::class, 'register']);
+});
 Route::match(['get', 'post'], '/cliente/logout', [AuthController::class, 'logout'])->name('cliente.logout');
 
 // Recherche : autocomplete (JSON) + page de résultats

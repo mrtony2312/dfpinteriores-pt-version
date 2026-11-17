@@ -26,7 +26,7 @@ class FeedBuild extends Command
     public function handle(GoogleProductMapper $mapper, GoogleFeedGenerator $generator): int
     {
         $startedAt = microtime(true);
-        $min = (float) config('feed.min_price', 80);
+        $min = (float) config('feed.min_price', 100);
         $target = (int) ($this->option('limit') ?: config('feed.target_items', 980));
         $safetyFloor = (int) config('feed.min_items_safety', 500);
 
@@ -112,8 +112,17 @@ class FeedBuild extends Command
             return self::FAILURE;
         }
 
-        $this->writeCsv($selected);
-        $this->writeSelectionCsv($rows);
+        try {
+            $this->writeCsv($selected);
+        } catch (Throwable $e) {
+            $this->warn('CSV non écrit (XML OK) : '.$e->getMessage());
+        }
+
+        try {
+            $this->writeSelectionCsv($rows);
+        } catch (Throwable $e) {
+            $this->warn('FEED-SELECTION.csv non écrit (XML OK) : '.$e->getMessage());
+        }
 
         $durationMs = (int) round((microtime(true) - $startedAt) * 1000);
         $fileSize = is_file($storage) ? filesize($storage) : 0;
@@ -172,7 +181,15 @@ class FeedBuild extends Command
      */
     private function writeCsv(array $items): void
     {
-        $fh = fopen(public_path('feeds/google-merchant.csv'), 'w');
+        $path = public_path('feeds/google-merchant.csv');
+        $dir = dirname($path);
+        $tmp = $dir.'/.google-merchant.csv.'.getmypid().'.'.uniqid('', true).'.tmp';
+
+        $fh = fopen($tmp, 'w');
+        if ($fh === false) {
+            throw new \RuntimeException("Impossible d'ouvrir le CSV temporaire : {$tmp}");
+        }
+
         $cols = ['id', 'title', 'description', 'link', 'image_link', 'additional_image_link',
             'availability', 'condition', 'price', 'sale_price', 'brand', 'gtin', 'mpn',
             'identifier_exists', 'google_product_category', 'product_type', 'item_group_id',
@@ -191,6 +208,14 @@ class FeedBuild extends Command
             ], "\t");
         }
         fclose($fh);
+
+        if (! @rename($tmp, $path)) {
+            if (! @copy($tmp, $path)) {
+                @unlink($tmp);
+                throw new \RuntimeException("Impossible d'écrire le CSV : {$path}");
+            }
+            @unlink($tmp);
+        }
     }
 
     /**

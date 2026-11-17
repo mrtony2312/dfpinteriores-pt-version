@@ -39,6 +39,7 @@ class OrderReceivedAdmin extends Mailable
     public function attachments(): array
     {
         $path = $this->order->transfer_proof_path;
+<<<<<<< Updated upstream
         if (! is_string($path) || $path === '' || ! Storage::disk('local')->exists($path)) {
             return [];
         }
@@ -48,6 +49,15 @@ class OrderReceivedAdmin extends Mailable
         return [
             Attachment::fromStorageDisk('local', $path)
                 ->as($name)
+=======
+        if (! $path || ! Storage::disk('local')->exists($path)) {
+            return [];
+        }
+
+        return [
+            Attachment::fromStorageDisk('local', $path)
+                ->as($this->order->transfer_proof_name ?: 'comprovativo-transferencia')
+>>>>>>> Stashed changes
                 ->withMime(Storage::disk('local')->mimeType($path) ?: 'application/octet-stream'),
         ];
     }

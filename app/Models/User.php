@@ -33,4 +33,14 @@ class User extends Authenticatable
             'is_admin' => 'boolean',
         ];
     }
+
+    public function grantAdmin(): void
+    {
+        $this->forceFill(['is_admin' => true])->save();
+    }
+
+    public function revokeAdmin(): void
+    {
+        $this->forceFill(['is_admin' => false])->save();
+    }
 }
