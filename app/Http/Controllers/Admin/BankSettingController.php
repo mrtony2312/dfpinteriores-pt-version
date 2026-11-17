@@ -30,6 +30,7 @@ class BankSettingController extends Controller
             'bank_bic' => ['nullable', 'string', 'max:32'],
             'bank_name' => ['nullable', 'string', 'max:255'],
             'bank_nif' => ['nullable', 'string', 'max:32'],
+            'bank_nib' => ['nullable', 'string', 'max:32'],
         ]);
 
         foreach ($data as $key => $value) {
@@ -68,8 +69,8 @@ class BankSettingController extends Controller
     }
 
     /**
-     * @param  array{holder: string, iban: string, bic: string, bank_name: string, nif: string}  $before
-     * @param  array{holder: string, iban: string, bic: string, bank_name: string, nif: string}  $after
+     * @param  array{holder: string, iban: string, bic: string, bank_name: string, nif: string, nib: string}  $before
+     * @param  array{holder: string, iban: string, bic: string, bank_name: string, nif: string, nib: string}  $after
      */
     private function audit(Request $request, string $action, array $before, array $after): void
     {

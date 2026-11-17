@@ -13,6 +13,7 @@ return [
         'bic' => env('BANK_BIC', ''),
         'bank_name' => env('BANK_NAME', ''),
         'nif' => env('BANK_NIF', '504074571'),
+        'nib' => env('BANK_NIB', ''),
     ],
 
 ];

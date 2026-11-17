@@ -38,13 +38,16 @@ Faça de imediato a transferência bancária e envie o comprovativo na página d
 @php
     $bank = $bank ?? \App\Http\Controllers\CheckoutController::bankDetails();
 @endphp
-@if ($bank['holder'] || $bank['iban'])
+@if ($bank['holder'] || $bank['iban'] || ($bank['nib'] ?? ''))
 Dados da conta:
 @if ($bank['holder'])
 - **Titular:** {{ $bank['holder'] }}
 @endif
 @if ($bank['iban'])
 - **IBAN:** {{ $bank['iban'] }}
+@endif
+@if ($bank['nib'] ?? '')
+- **NIB:** {{ $bank['nib'] }}
 @endif
 @if ($bank['bic'])
 - **BIC/SWIFT:** {{ $bank['bic'] }}

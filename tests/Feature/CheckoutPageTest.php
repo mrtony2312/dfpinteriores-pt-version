@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Http\Controllers\CheckoutController;
 use App\Mail\OrderConfirmation;
 use App\Mail\OrderReceivedAdmin;
 use App\Models\Order;
@@ -108,5 +109,15 @@ class CheckoutPageTest extends TestCase
         Mail::assertSent(OrderReceivedAdmin::class, function (OrderReceivedAdmin $mail) use ($order) {
             return $mail->order->is($order) && count($mail->attachments()) === 1;
         });
+
+        $delivery = CheckoutController::deliveryDate($order->fresh());
+        $deliveryText = $delivery->locale('pt')->translatedFormat('j \d\e F \d\e Y');
+
+        $this->get(route('checkout.success', $order->ref))
+            ->assertOk()
+            ->assertSee('Vamos confirmar a receção do pagamento por e-mail', false)
+            ->assertSee('data exata de entrega', false)
+            ->assertSee($deliveryText, false)
+            ->assertDontSee('Faça a transferência de imediato', false);
     }
 }

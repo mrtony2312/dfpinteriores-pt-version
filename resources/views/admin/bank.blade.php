@@ -34,6 +34,11 @@
             </div>
 
             <div class="field">
+                <label for="bank_nib">NIB (opcional)</label>
+                <input id="bank_nib" type="text" name="bank_nib" value="{{ old('bank_nib', $settings->bank_nib) }}" placeholder="21 dígitos" maxlength="32" inputmode="numeric" autocomplete="off">
+            </div>
+
+            <div class="field">
                 <label for="bank_bic">BIC / SWIFT</label>
                 <input id="bank_bic" type="text" name="bank_bic" value="{{ old('bank_bic', $settings->bank_bic) }}">
             </div>

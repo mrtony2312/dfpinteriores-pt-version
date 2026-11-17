@@ -3,12 +3,13 @@
 @section('title', 'Encomenda registada | DFP Interiores')
 
 @push('styles')
-<link rel="stylesheet" href="/assets/css/checkout-omniva.css?v=9">
+<link rel="stylesheet" href="/assets/css/checkout-omniva.css?v=11">
 @endpush
 
 @section('content')
 @php
     $fmt = fn ($value) => number_format((float) $value, 2, ',', ' ').' €';
+    $proofReceived = (bool) (session('proof_sent') || $order->transfer_proof_name);
 @endphp
 
 <div class="tf-page-title-2 flat-spacing-2">
@@ -31,6 +32,27 @@
         <div class="row gy-30">
             <div class="col-lg-8">
                 <div class="tf-checkout-cart-main">
+                    @if ($proofReceived)
+                        <div class="dfp-co-success">
+                            <span class="dfp-co-success__mark" aria-hidden="true">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.6"/>
+                                    <path d="M8 12.5l2.5 2.5L16 9.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
+                            <h6>Comprovativo enviado</h6>
+                            <p>
+                                Recebemos o comprovativo da transferência.
+                                Vamos confirmar a receção do pagamento por e-mail para
+                                <strong>{{ $order->email }}</strong>,
+                                assim como a data exata de entrega.
+                            </p>
+                            <div class="dfp-co-success__date">
+                                <span>{{ $deliveryLabel }}</span>
+                                <strong>{{ $deliveryText }}</strong>
+                            </div>
+                        </div>
+                    @else
                     <div class="box-ip-payment">
                         <div class="title">
                             <h6 class="mb-4">Faça a transferência de imediato</h6>
@@ -42,7 +64,7 @@
                         </div>
 
                         <div class="dfp-co-bank mb-16">
-                            @if ($bank['holder'] || $bank['iban'])
+                            @if ($bank['holder'] || $bank['iban'] || $bank['nib'])
                                 @if ($bank['holder'])
                                     <div class="dfp-co-bank-row"><span>Titular</span><strong>{{ $bank['holder'] }}</strong></div>
                                 @endif
@@ -51,6 +73,9 @@
                                 @endif
                                 @if ($bank['iban'])
                                     <div class="dfp-co-bank-row"><span>IBAN</span><strong class="iban">{{ $bank['iban'] }}</strong></div>
+                                @endif
+                                @if ($bank['nib'])
+                                    <div class="dfp-co-bank-row"><span>NIB</span><strong>{{ $bank['nib'] }}</strong></div>
                                 @endif
                                 @if ($bank['bic'])
                                     <div class="dfp-co-bank-row"><span>BIC/SWIFT</span><strong>{{ $bank['bic'] }}</strong></div>
@@ -116,6 +141,7 @@
                             </form>
                         </div>
                     </div>
+                    @endif
                 </div>
             </div>
 

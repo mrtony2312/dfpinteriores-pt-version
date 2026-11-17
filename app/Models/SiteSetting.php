@@ -13,6 +13,7 @@ class SiteSetting extends Model
         'bank_bic',
         'bank_name',
         'bank_nif',
+        'bank_nib',
     ];
 
     /**
@@ -32,13 +33,14 @@ class SiteSetting extends Model
             'bank_bic' => (string) config('checkout.bank.bic'),
             'bank_name' => (string) config('checkout.bank.bank_name'),
             'bank_nif' => (string) config('checkout.bank.nif'),
+            'bank_nib' => (string) config('checkout.bank.nib'),
         ]);
     }
 
     /**
      * Valeurs telles qu'enregistrées en admin (sans fallback .env après édition).
      *
-     * @return array{holder: string, iban: string, bic: string, bank_name: string, nif: string}
+     * @return array{holder: string, iban: string, bic: string, bank_name: string, nif: string, nib: string}
      */
     public function bankDetails(): array
     {
@@ -48,6 +50,7 @@ class SiteSetting extends Model
             'bic' => (string) ($this->bank_bic ?? ''),
             'bank_name' => (string) ($this->bank_name ?? ''),
             'nif' => (string) ($this->bank_nif ?? ''),
+            'nib' => (string) ($this->bank_nib ?? ''),
         ];
     }
 
@@ -59,6 +62,7 @@ class SiteSetting extends Model
             'bank_bic' => null,
             'bank_name' => null,
             'bank_nif' => null,
+            'bank_nib' => null,
         ]);
     }
 
@@ -66,6 +70,6 @@ class SiteSetting extends Model
     {
         $details = $this->bankDetails();
 
-        return $details['holder'] !== '' || $details['iban'] !== '';
+        return $details['holder'] !== '' || $details['iban'] !== '' || $details['nib'] !== '';
     }
 }

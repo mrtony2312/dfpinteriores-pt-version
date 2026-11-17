@@ -10,6 +10,7 @@ use App\Models\SiteSetting;
 use App\Services\CartService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -34,7 +35,7 @@ class CheckoutController extends Controller
     public function __construct(private CartService $cart) {}
 
     /**
-     * @return array{holder: string, iban: string, bic: string, bank_name: string, nif: string}
+     * @return array{holder: string, iban: string, bic: string, bank_name: string, nif: string, nib: string}
      */
     public static function bankDetails(): array
     {
@@ -47,6 +48,7 @@ class CheckoutController extends Controller
                 'bic' => (string) config('checkout.bank.bic', ''),
                 'bank_name' => (string) config('checkout.bank.bank_name', ''),
                 'nif' => (string) config('checkout.bank.nif', ''),
+                'nib' => (string) config('checkout.bank.nib', ''),
             ];
         }
     }
@@ -180,13 +182,36 @@ class CheckoutController extends Controller
     {
         $order = $this->orderForCustomer($ref);
 
+        $deliveryOn = self::deliveryDate($order);
+
         return view('pages.checkout-sucesso', [
             'order' => $order,
             'shipping' => self::SHIPPING,
             'payment' => self::PAYMENT,
             'bank' => self::bankDetails(),
             'similarProducts' => $this->similarProducts($order),
+            'deliveryOn' => $deliveryOn,
+            'deliveryText' => mb_ucfirst($deliveryOn->locale('pt')->translatedFormat('l, j \d\e F \d\e Y')),
+            'deliveryLabel' => $order->shipping_method === 'LEVANTAMENTO' ? 'Data de levantamento' : 'Data de entrega',
         ]);
+    }
+
+    /**
+     * Date ferme communiquée au client : 3 jours ouvrés après la réception du comprovativo.
+     */
+    public static function deliveryDate(Order $order): Carbon
+    {
+        $cursor = ($order->updated_at ?? now())->copy()->startOfDay();
+        $remaining = 3;
+
+        while ($remaining > 0) {
+            $cursor->addDay();
+            if ($cursor->isWeekday()) {
+                $remaining--;
+            }
+        }
+
+        return $cursor;
     }
 
     public function uploadProof(Request $request, string $ref)

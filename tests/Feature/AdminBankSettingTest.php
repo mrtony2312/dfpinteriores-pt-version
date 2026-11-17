@@ -40,7 +40,9 @@ class AdminBankSettingTest extends TestCase
     {
         $this->actingAsAdmin()
             ->get(route('admin.bank.edit'))
-            ->assertOk();
+            ->assertOk()
+            ->assertSee('NIB', false)
+            ->assertSee('opcional', false);
     }
 
     public function test_admin_can_update_bank_details(): void
@@ -52,6 +54,7 @@ class AdminBankSettingTest extends TestCase
                 'bank_bic' => 'BBPIPTPL',
                 'bank_name' => 'Banco Teste',
                 'bank_nif' => '504074571',
+                'bank_nib' => '0000 0000 00000000000 00',
             ])
             ->assertRedirect(route('admin.bank.edit'));
 
@@ -60,8 +63,10 @@ class AdminBankSettingTest extends TestCase
         $this->assertSame('DFP Interiores Teste', $settings->bank_holder);
         $this->assertSame('PT50 1111 2222 3333 4444 5555 6', $settings->bank_iban);
         $this->assertSame('BBPIPTPL', $settings->bank_bic);
+        $this->assertSame('0000 0000 00000000000 00', $settings->bank_nib);
         $this->assertDatabaseHas('bank_setting_audits', ['action' => 'updated']);
         $this->assertSame('PT50 1111 2222 3333 4444 5555 6', CheckoutController::bankDetails()['iban']);
+        $this->assertSame('0000 0000 00000000000 00', CheckoutController::bankDetails()['nib']);
     }
 
     public function test_admin_can_clear_bank_details(): void
@@ -72,6 +77,7 @@ class AdminBankSettingTest extends TestCase
             'bank_bic' => 'TESTPTPL',
             'bank_name' => 'Banco',
             'bank_nif' => '123',
+            'bank_nib' => '000000000000000000000',
         ]);
 
         $this->actingAsAdmin()
@@ -82,7 +88,9 @@ class AdminBankSettingTest extends TestCase
 
         $this->assertNull($settings->bank_holder);
         $this->assertNull($settings->bank_iban);
+        $this->assertNull($settings->bank_nib);
         $this->assertSame('', CheckoutController::bankDetails()['iban']);
+        $this->assertSame('', CheckoutController::bankDetails()['nib']);
         $this->assertDatabaseHas('bank_setting_audits', ['action' => 'deleted']);
     }
 
@@ -94,6 +102,7 @@ class AdminBankSettingTest extends TestCase
             'bank_bic' => 'CGDIPTPL',
             'bank_name' => 'CGD',
             'bank_nif' => '504074571',
+            'bank_nib' => '',
         ]);
 
         $details = CheckoutController::bankDetails();
@@ -101,5 +110,6 @@ class AdminBankSettingTest extends TestCase
         $this->assertSame('Conta Site', $details['holder']);
         $this->assertSame('PT50 9999 8888 7777 6666 5555 4', $details['iban']);
         $this->assertSame('CGDIPTPL', $details['bic']);
+        $this->assertSame('', $details['nib']);
     }
 }
