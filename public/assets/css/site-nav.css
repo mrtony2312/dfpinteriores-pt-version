@@ -22,6 +22,32 @@
 .logo-text span { color: #c4a484; font-weight: 500; }
 .tf-topbar.bg-dfp { background: #1a1a1a !important; }
 
+/* Annonces du header : une phrase entière, sans chevauchement au défilement */
+.tf-topbar .tf-btn-swiper-main {
+    width: 100% !important;
+    max-width: none !important;
+}
+.tf-topbar .swiper-topbar {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+}
+.tf-topbar .swiper-topbar .swiper-slide {
+    display: flex;
+    align-items: center;
+    height: auto;
+}
+.tf-topbar .swiper-topbar .text-adver {
+    white-space: nowrap;
+    justify-content: flex-start;
+    width: 100%;
+}
+@media (max-width: 1199px) {
+    .tf-topbar .swiper-topbar .text-adver {
+        font-size: 12px;
+    }
+}
+
 @media (max-width: 1199px) {
     .tf-header .header-inner {
         padding-top: 10px;

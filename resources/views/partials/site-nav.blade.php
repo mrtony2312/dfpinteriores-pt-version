@@ -7,7 +7,7 @@
             <div class="col-lg-6">
                 <div class="tf-btn-swiper-main">
                     <div class="text-white fs-18 nav-prev-swiper"><i class="icon icon-ArrowCaretLeft"></i></div>
-                    <div dir="ltr" class="swiper tf-swiper swiper-topbar" data-touch="false" data-auto="true" data-loop="true" data-speed="1500">
+                    <div dir="ltr" class="swiper tf-swiper swiper-topbar" data-touch="false" data-auto="true" data-loop="true" data-speed="600" data-delay="4000">
                         <div class="swiper-wrapper">
                             <div class="swiper-slide">
                                 <div class="text-adver text-white text-caption">

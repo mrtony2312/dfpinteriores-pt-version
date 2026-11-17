@@ -21,8 +21,8 @@
     <link rel="stylesheet" href="/omniva/css/styles.css">
     <link rel="stylesheet" href="/assets/css/footer-classic.css?v=3">
     <link rel="stylesheet" href="/assets/css/shipping-marquee.css?v=2">
-    <link rel="stylesheet" href="/assets/css/home-promo-slider.css?v=1">
-    <link rel="stylesheet" href="/assets/css/site-nav.css?v=7">
+    <link rel="stylesheet" href="/assets/css/home-promo-slider.css?v=2">
+    <link rel="stylesheet" href="/assets/css/site-nav.css?v=8">
     <style>
         /* Bannières promo — image entière, affichage normal */
         .dfp-promo-banner {
@@ -266,7 +266,7 @@
                     <div class="col-lg-6">
                         <div class="tf-btn-swiper-main">
                             <div class="text-white fs-18 nav-prev-swiper"><i class="icon icon-ArrowCaretLeft"></i></div>
-                            <div dir="ltr" class="swiper tf-swiper swiper-topbar" data-touch="false" data-auto="true" data-loop="true" data-speed="1500">
+                            <div dir="ltr" class="swiper tf-swiper swiper-topbar" data-touch="false" data-auto="true" data-loop="true" data-speed="600" data-delay="4000">
                                 <div class="swiper-wrapper">
                                     <div class="swiper-slide">
                                         <div class="text-adver text-white text-caption">

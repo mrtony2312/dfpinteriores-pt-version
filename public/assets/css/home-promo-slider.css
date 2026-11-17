@@ -2,7 +2,7 @@
 
 .dfp-promo-hero {
     width: 100%;
-    background: #0f0f0f;
+    background: transparent;
 }
 
 .dfp-promo-hero__banner {
@@ -99,15 +99,21 @@
     padding-top: 28px;
     padding-bottom: 8px;
     text-align: center;
+    background: #fff;
 }
 
 .dfp-promo-hero__video video {
-    width: min(100%, 960px);
+    width: min(100%, 1100px);
     max-width: 100%;
     height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: contain;
+    object-position: center;
+    background: #111;
     border-radius: 10px;
     display: inline-block;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, .28);
+    vertical-align: top;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, .18);
 }
 
 .dfp-promo-hero__cards {
