@@ -5,6 +5,7 @@
 @section('content')
 <div class="CheckoutPage">
     <h1>Finalizar encomenda</h1>
+    <p class="co-intro">Preencha os seus dados, efetue a transferência bancária e anexe o comprovativo para concluir.</p>
 
     @if ($errors->any())
         <div class="co-errors">
@@ -19,10 +20,12 @@
 
     <form method="POST" action="{{ route('checkout.place') }}" id="checkoutForm" enctype="multipart/form-data">
         @csrf
+        <input type="hidden" name="payment_method" value="VIREMENT">
+
         <div class="co-grid">
             <div>
                 <div class="co-card">
-                    <h2>Contacto</h2>
+                    <h2><span class="co-step">1</span> Contacto e entrega</h2>
                     <div class="grid2">
                         <div class="field">
                             <label>Nome completo</label>
@@ -45,12 +48,9 @@
                             @error('nif') <span class="err">{{ $message }}</span> @enderror
                         </div>
                     </div>
-                </div>
 
-                <div class="co-card">
-                    <h2>Morada de entrega</h2>
-                    <div class="field">
-                        <label>Morada</label>
+                    <div class="field" style="margin-top:12px;">
+                        <label>Morada de entrega</label>
                         <input type="text" name="address" value="{{ old('address') }}" class="@error('address') is-invalid @enderror" required>
                         @error('address') <span class="err">{{ $message }}</span> @enderror
                     </div>
@@ -104,43 +104,13 @@
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <aside class="co-summary">
-                <h2>A sua encomenda</h2>
-                @foreach ($cart['items'] as $it)
-                    <div class="li">
-                        <img src="/images/120-120/{{ $it['images'][0] }}" alt="{{ $it['nome'] }}">
-                        <div>
-                            <div class="nm">{{ $it['nome'] }}</div>
-                            <div class="q">Qtd: {{ $it['qtd'] }}</div>
-                        </div>
-                        <div class="pr">{{ number_format((float) $it['total'], 2, ',', ' ') }}€</div>
-                    </div>
-                @endforeach
-
-                <div class="row"><span>Subtotal</span><span>{{ number_format((float) $cart['subtotal'], 2, ',', ' ') }}€</span></div>
-                <div class="row"><span>Portes de envio</span><span>Grátis</span></div>
-                <div class="row total"><span>Total</span><span>{{ number_format((float) $cart['subtotal'], 2, ',', ' ') }}€</span></div>
-                <p style="font-size:13px;color:#555;margin:8px 0 14px;">
-                    Envio gratuito para todo o Portugal.<br>
-                    Entrega em 1 a 3 dias úteis (preparação: 1 dia útil).
-                </p>
-
-                <div class="co-pay">
-                    <h2>Pagamento</h2>
-                    <label class="opt sel" id="payOptVirement">
-                        <input type="radio" name="payment_method" value="VIREMENT"
-                               {{ old('payment_method', 'VIREMENT') === 'VIREMENT' ? 'checked' : '' }} required>
-                        <div>
-                            <div class="t">{{ $paymentOptions['VIREMENT']['label'] }}</div>
-                            <div class="d">{{ $paymentOptions['VIREMENT']['desc'] }}</div>
-                        </div>
-                    </label>
-                    @error('payment_method') <span class="err">{{ $message }}</span> @enderror
+                <div class="co-card">
+                    <h2><span class="co-step">2</span> Pagamento por transferência bancária</h2>
+                    <p class="co-bank-lead">Único método de pagamento: transfira o total da encomenda para a conta abaixo e anexe o comprovativo.</p>
 
                     <div class="co-bank">
-                        <div class="co-bank-title">Dados para transferência</div>
+                        <div class="co-bank-title">Dados da conta DFP Interiores</div>
                         @if ($bank['holder'] || $bank['iban'])
                             @if ($bank['holder'])
                                 <div class="co-bank-row"><span>Titular</span><strong>{{ $bank['holder'] }}</strong></div>
@@ -160,29 +130,52 @@
                             @if ($bank['nif'])
                                 <div class="co-bank-row"><span>NIF</span><strong>{{ $bank['nif'] }}</strong></div>
                             @endif
-                            <p class="co-bank-hint">Faça a transferência e anexe o comprovativo abaixo. O ficheiro será enviado por email com a encomenda.</p>
                         @else
-                            <p class="co-bank-hint">Os dados bancários serão comunicados após a encomenda. Anexe o comprovativo assim que concluir a transferência.</p>
+                            <p class="co-bank-hint">Os dados bancários serão confirmados pela nossa equipa após a encomenda.</p>
                         @endif
+                        <p class="co-bank-hint">Use a referência da encomenda no descritivo da transferência (será indicada no email de confirmação).</p>
                     </div>
 
                     <div class="co-proof">
-                        <label class="co-proof-label" for="transfer_proof">Comprovativo de transferência</label>
+                        <label class="co-proof-label" for="transfer_proof">3 — Anexar comprovativo de pagamento</label>
                         <input type="file" name="transfer_proof" id="transfer_proof" accept=".jpg,.jpeg,.png,.webp,.pdf,image/*,application/pdf" required
                                class="@error('transfer_proof') is-invalid @enderror">
-                        <p class="co-proof-hint">JPG, PNG, WEBP ou PDF — máx. 5 MB</p>
+                        <p class="co-proof-hint">JPG, PNG, WEBP ou PDF — máx. 5 MB. O comprovativo será enviado por email com os detalhes da encomenda.</p>
                         <p class="co-proof-name" id="transferProofName" hidden></p>
                         @error('transfer_proof') <span class="err">{{ $message }}</span> @enderror
                     </div>
                 </div>
+            </div>
+
+            <aside class="co-summary">
+                <h2>A sua encomenda</h2>
+                @foreach ($cart['items'] as $it)
+                    <div class="li">
+                        <img src="/images/120-120/{{ $it['images'][0] }}" alt="{{ $it['nome'] }}">
+                        <div>
+                            <div class="nm">{{ $it['nome'] }}</div>
+                            <div class="q">Qtd: {{ $it['qtd'] }}</div>
+                        </div>
+                        <div class="pr">{{ number_format((float) $it['total'], 2, ',', ' ') }}€</div>
+                    </div>
+                @endforeach
+
+                <div class="row"><span>Subtotal</span><span>{{ number_format((float) $cart['subtotal'], 2, ',', ' ') }}€</span></div>
+                <div class="row"><span>Portes de envio</span><span>Grátis</span></div>
+                <div class="row total"><span>Total a transferir</span><span>{{ number_format((float) $cart['subtotal'], 2, ',', ' ') }}€</span></div>
+                <p style="font-size:13px;color:#555;margin:8px 0 14px;">
+                    Envio gratuito para todo o Portugal.<br>
+                    Entrega em 1 a 3 dias úteis (preparação: 1 dia útil).
+                </p>
 
                 <label class="check-row">
-                    <input type="checkbox" name="terms" value="1" {{ old('terms') ? 'checked' : '' }}>
-                    <span>Li e aceito os <a href="/ajuda/termos-e-condicoes" target="_blank">termos e condições</a>.</span>
+                    <input type="checkbox" name="terms" value="1" {{ old('terms') ? 'checked' : '' }} required>
+                    <span>Li e aceito os <a href="{{ route('ajuda.termos') }}" target="_blank">termos e condições</a>.</span>
                 </label>
                 @error('terms') <span class="err">{{ $message }}</span> @enderror
 
                 <button type="submit" class="co-submit">Confirmar encomenda</button>
+                <p class="co-submit-hint">Ao confirmar, recebe por email o resumo da encomenda e o comprovativo em anexo.</p>
             </aside>
         </div>
     </form>
@@ -190,6 +183,16 @@
 @endsection
 
 @push('scripts')
+<style>
+.CheckoutPage .co-intro { color:#555; margin:0 0 18px; max-width:720px; }
+.CheckoutPage .co-step {
+    display:inline-flex; align-items:center; justify-content:center;
+    width:1.5rem; height:1.5rem; margin-right:.4rem; border-radius:999px;
+    background:#e5007d; color:#fff; font-size:.85rem; font-weight:700;
+}
+.CheckoutPage .co-bank-lead { margin:0 0 12px; color:#444; font-size:14px; }
+.CheckoutPage .co-submit-hint { margin:10px 0 0; font-size:12px; color:#666; line-height:1.4; }
+</style>
 <script>
 (function () {
     var billingDiff = document.getElementById('billingDiff');

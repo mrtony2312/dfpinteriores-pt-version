@@ -7,9 +7,7 @@ use Illuminate\Http\Request;
 
 class CartController extends Controller
 {
-    public function __construct(private CartService $cart)
-    {
-    }
+    public function __construct(private CartService $cart) {}
 
     public function add(Request $request)
     {
@@ -23,8 +21,31 @@ class CartController extends Controller
 
         return response()->json([
             'cart' => $this->cart->toArray(),
-            'dl'   => $this->cart->dataLayer('add_to_cart'),
+            'dl' => $this->cart->dataLayer('add_to_cart'),
+            'checkout_url' => route('checkout'),
         ]);
+    }
+
+    /** Ajoute au panier puis envoie directement au checkout (achat immédiat). */
+    public function buyNow(Request $request)
+    {
+        $id = CartService::resolveProductId((string) $request->input('product'));
+        abort_if($id === null, 422, 'Produto inválido.');
+
+        $variation = $request->filled('variation') ? (int) $request->input('variation') : null;
+        $qtd = (int) $request->input('qtd', 1);
+
+        $this->cart->add($id, $variation, $qtd);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'cart' => $this->cart->toArray(),
+                'dl' => $this->cart->dataLayer('add_to_cart'),
+                'checkout_url' => route('checkout'),
+            ]);
+        }
+
+        return redirect()->route('checkout');
     }
 
     public function update(Request $request)
@@ -33,7 +54,7 @@ class CartController extends Controller
 
         return response()->json([
             'cart' => $this->cart->toArray(),
-            'dl'   => $this->cart->dataLayer('update_cart'),
+            'dl' => $this->cart->dataLayer('update_cart'),
         ]);
     }
 
@@ -43,7 +64,7 @@ class CartController extends Controller
 
         return response()->json([
             'cart' => $this->cart->toArray(),
-            'dl'   => $this->cart->dataLayer('remove_from_cart'),
+            'dl' => $this->cart->dataLayer('remove_from_cart'),
         ]);
     }
 

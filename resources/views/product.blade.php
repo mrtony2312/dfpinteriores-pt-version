@@ -175,10 +175,10 @@
 						<div v-if="modalFinalizar.visible" class="modal">
 							<div class="modal-content">
 								<button class="close-btn" @click="modalFinalizar.visible=false">✖</button>
-								<h2>Adicionado com sucesso"</h2>
-								<p>O artigo foi adicionado ao carrinho com sucesso.</p>
-								<a class='btn btn-primary'>Continuar a comprar</a>
-								<a class='btn btn-secondary'>Finalizar a encomenda</a>
+								<h2>Adicionado com sucesso</h2>
+								<p>O artigo foi adicionado ao carrinho. Pode continuar a comprar ou finalizar a encomenda.</p>
+								<a href="#" class="btn btn-primary" @click.prevent="modalFinalizar.visible=false">Continuar a comprar</a>
+								<a href="{{ route('checkout') }}" class="btn btn-secondary">Finalizar a encomenda</a>
 							</div>
 						</div>
 
@@ -224,18 +224,24 @@
 						                Adicionar ao carrinho
 						                -->
 						<div class="actions">
-							<div>
+							<div class="product-order-actions">
 								<a href="#" class="Wishlist " data-artigo="{{ $productId }}" title="Adicionar à wishlist">
 								<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#cccccc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart-icon lucide-heart"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></svg>
 								</a>
 
-								<a v-if="isInStock" class="AddCarrinho" @click="addProduct" :class="{'disabled' : !selectedOption?.pid}" data-mobile="true" data-artigo="{{ $productId }}" data-preco="{{ $productPrice }}" data-nome="{{ $productName }}" data-categoria="{{ $productCategory }}">
-									<span>
-										<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-cart-icon lucide-shopping-cart"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
-										ADICIONE AO CARRINHO
-									</span>
-									<img v-if="loader" class='addCartLoader' src='/assets/loader.svg' style='height: 25px;'></a>
-								<a v-else  class="AddCarrinho"  btn btn-primary">
+								<template v-if="isInStock">
+									<a class="AddCarrinho" @click.prevent="addProduct" :class="{'disabled' : loader}" data-mobile="true" data-artigo="{{ $productId }}" data-preco="{{ $productPrice }}" data-nome="{{ $productName }}" data-categoria="{{ $productCategory }}">
+										<span>
+											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-cart-icon lucide-shopping-cart"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+											ADICIONAR AO CARRINHO
+										</span>
+										<img v-if="loader" class='addCartLoader' src='/assets/loader.svg' style='height: 25px;'>
+									</a>
+									<a class="AddCarrinho BuyNow" @click.prevent="buyNow" :class="{'disabled' : loader}" href="{{ route('checkout') }}">
+										<span>COMPRAR AGORA</span>
+									</a>
+								</template>
+								<a v-else class="AddCarrinho btn btn-primary disabled" href="#" @click.prevent>
 									<i class='fa fa-bell' style='font-size:12px;' aria-hidden='true'></i> Temporariamente indisponível
 								</a>
 							</div>
@@ -2250,7 +2256,7 @@
 				<div class="WAlerta ConfirmaCarrinho">
 					O artigo foi adicionado ao seu Carrinho, o que pretende fazer agora?<br>
 					<a class="FancyClose btn btn-dark">Continuar a comprar</a>
-					<a href="/carrinho" class="btn btn-light">Finalizar encomenda</a>
+					<a href="{{ route('checkout') }}" class="btn btn-light">Finalizar encomenda</a>
 				</div>
 			</div>
 		</div>

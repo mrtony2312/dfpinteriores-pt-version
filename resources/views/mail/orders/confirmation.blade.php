@@ -21,16 +21,15 @@ Vai receber uma nova mensagem assim que for expedida.
 | **Total** | | **{{ $order->money($order->total) }}** |
 </x-mail::table>
 
-## Pagamento
-
-Para confirmar a sua encomenda **{{ $order->ref }}**, falta apenas concluir o pagamento no valor de **{{ $order->money($order->total) }}**.
+## Pagamento (transferência bancária)
 
 **Método:** {{ $order->paymentLabel() }}
+**Valor:** {{ $order->money($order->total) }}
+**Descritivo / referência:** {{ $order->ref }}
 
 @php($bank = \App\Http\Controllers\CheckoutController::bankDetails())
-Efetue a transferência bancária no valor de **{{ $order->money($order->total) }}** com o descritivo **{{ $order->ref }}**:
-
 @if ($bank['holder'] || $bank['iban'])
+Dados da conta:
 @if ($bank['holder'])
 - **Titular:** {{ $bank['holder'] }}
 @endif
@@ -46,27 +45,24 @@ Efetue a transferência bancária no valor de **{{ $order->money($order->total) 
 @if ($bank['nif'])
 - **NIF:** {{ $bank['nif'] }}
 @endif
-@else
-Os dados bancários serão comunicados pela nossa equipa.
 @endif
 
 @if ($order->transfer_proof_path)
-Recebemos o seu comprovativo (**{{ $order->transfer_proof_name }}**) — também segue em anexo neste email.
+Recebemos o seu comprovativo de pagamento (**{{ $order->transfer_proof_name }}**). O ficheiro segue em anexo neste email (recibo da transação).
+A nossa equipa vai validar a transferência e processar a encomenda.
+@else
+Assim que confirmarmos o pagamento, a encomenda avança para preparação.
 @endif
-
-A encomenda será processada após confirmação do pagamento.
-
-Prefere falar connosco? Toque no botão abaixo para contactar a nossa equipa pelo WhatsApp.
 
 @php
     $itemsSummary = $order->items->map(fn ($it) => $it->qty.'x '.$it->name.($it->variation ? ' ('.$it->variation.')' : ''))->implode(', ');
-    $whatsappMessage = "Olá! Quero finalizar o pagamento da minha encomenda {$order->ref}, no valor de {$order->money($order->total)}.\n"
+    $whatsappMessage = "Olá! Sobre a minha encomenda {$order->ref} ({$order->money($order->total)}).\n"
         ."Nome: {$order->name}\n"
         ."Artigos: {$itemsSummary}";
 @endphp
 
 <x-mail::button :url="'https://api.whatsapp.com/send?phone=351912026453&text='.urlencode($whatsappMessage)" color="success">
-Finalizar a minha encomenda no WhatsApp
+Falar connosco no WhatsApp
 </x-mail::button>
 
 ## Entrega

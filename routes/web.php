@@ -25,9 +25,6 @@ Route::get('/feeds/google-merchant.xml', [GoogleFeedController::class, 'xml'])->
 Route::get('/dfpinteriores-gmc-conforme.xml', [GoogleFeedController::class, 'xml'])->name('gmc.conforme');
 Route::get('/admin/feed/health', [GoogleFeedController::class, 'health'])->name('feed.health');
 
-<<<<<<< Updated upstream
-// Sitemap XML : home, pages institutionnelles, catégories, listes + fiches produit.
-=======
 // --- Admin : login + édition des données bancaires affichées sur le site ---
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware('throttle:10,1')->group(function () {
@@ -44,8 +41,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
 });
 
-// Sitemap XML : pages institutionnelles + fiches produit publiées (avec image).
->>>>>>> Stashed changes
+// Sitemap XML : home, pages institutionnelles, catégories, listes + fiches produit.
 Route::get('/sitemap.xml', function () {
     $static = [
         '/',
@@ -104,6 +100,7 @@ Route::get('/sitemap.xml', function () {
 
 // --- Panier (session) ---
 Route::post('/carrinho/add', [CartController::class, 'add'])->name('cart.add');
+Route::post('/carrinho/comprar', [CartController::class, 'buyNow'])->name('cart.buy');
 Route::post('/carrinho/update', [CartController::class, 'update'])->name('cart.update');
 Route::post('/carrinho/remove', [CartController::class, 'remove'])->name('cart.remove');
 Route::get('/carrinho/json', [CartController::class, 'json'])->name('cart.json');

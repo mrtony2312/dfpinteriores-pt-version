@@ -25,11 +25,7 @@
                         <a href="{{ $slide['href'] }}" class="dfp-promo-hero__slide">
                             @if (! empty($slide['file']))
                                 <img
-<<<<<<< Updated upstream
                                     src="/media/banners/{{ $slide['file'] }}.jpg?v=20261116"
-=======
-                                    src="/media/banners/{{ $slide['file'] }}.jpg?v=20261115"
->>>>>>> Stashed changes
                                     alt="{{ $slide['alt'] }}"
                                     width="1024"
                                     height="1024"
