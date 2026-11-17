@@ -3,7 +3,7 @@
 @section('title', 'Encomenda registada | DFP Interiores')
 
 @push('styles')
-<link rel="stylesheet" href="/assets/css/checkout-omniva.css?v=8">
+<link rel="stylesheet" href="/assets/css/checkout-omniva.css?v=9">
 @endpush
 
 @section('content')
@@ -65,36 +65,56 @@
                             <div class="dfp-co-bank-row"><span>Descritivo</span><strong>{{ $order->ref }}</strong></div>
                         </div>
 
-                        @if (session('proof_sent') || $order->transfer_proof_name)
-                            <p class="text-caption cl-text-main mb-0">
-                                Comprovativo enviado{{ $order->transfer_proof_name ? ': '.$order->transfer_proof_name : '' }}.
-                                A equipa confirma o pagamento e prepara a encomenda.
-                            </p>
-                        @endif
+                        <div class="dfp-co-proof-block">
+                            <div class="dfp-co-proof-block__head">
+                                <span class="dfp-co-proof-block__step">2</span>
+                                <div>
+                                    <h6 class="mb-4">Comprovativo de transferência</h6>
+                                    <p class="text-caption cl-text-4 mb-0">Depois do depósito, anexe o recibo do banco. Confirmamos o pagamento e preparamos a encomenda.</p>
+                                </div>
+                            </div>
 
-                        <form method="POST" action="{{ route('checkout.proof', $order->ref) }}" enctype="multipart/form-data" class="mt-16">
-                            @csrf
-                            @if ($errors->any())
-                                <div class="dfp-co-errors mb-16">
-                                    <ul>
-                                        @foreach ($errors->all() as $err)
-                                            <li>{{ $err }}</li>
-                                        @endforeach
-                                    </ul>
+                            @if (session('proof_sent') || $order->transfer_proof_name)
+                                <div class="dfp-co-proof-ok">
+                                    <strong>Comprovativo recebido</strong>
+                                    <span>{{ $order->transfer_proof_name ?: 'Ficheiro enviado' }}. A equipa confirma o pagamento. Pode substituir o ficheiro se precisar.</span>
                                 </div>
                             @endif
-                            <div class="dfp-co-proof @error('transfer_proof') is-invalid @enderror">
-                                <span class="dfp-co-proof__title">Comprovativo de transferência</span>
-                                <span class="dfp-co-proof__hint">JPG, PNG, WEBP ou PDF — máx. 5 MB. Envie o recibo logo após o depósito.</span>
-                                <button type="button" class="tf-btn-line text-caption" id="transferProofPick">Escolher comprovativo</button>
-                                <span class="dfp-co-proof__name" id="transferProofName">Nenhum ficheiro escolhido</span>
-                                <input class="dfp-co-file" type="file" name="transfer_proof" id="transfer_proof" accept=".jpg,.jpeg,.png,.webp,.pdf,image/*,application/pdf" aria-labelledby="transferProofPick">
-                            </div>
-                            @error('transfer_proof') <span class="dfp-co-field-error">{{ $message }}</span> @enderror
-                            <div class="mt-16">
-                                <button type="submit" class="tf-btn animate-btn size3 rounded-6 w-100">Enviar</button>
-                            </div>
-                        </form>
+
+                            <form method="POST" action="{{ route('checkout.proof', $order->ref) }}" enctype="multipart/form-data">
+                                @csrf
+                                @if ($errors->any())
+                                    <div class="dfp-co-errors mb-16">
+                                        <ul>
+                                            @foreach ($errors->all() as $err)
+                                                <li>{{ $err }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endif
+                                <div class="dfp-co-proof @error('transfer_proof') is-invalid @enderror" id="transferProofZone">
+                                    <span class="dfp-co-proof__icon" aria-hidden="true">
+                                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                                            <path d="M12 16V5M12 5l-4 4M12 5l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M4 16.5V18a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                                        </svg>
+                                    </span>
+                                    <span class="dfp-co-proof__title">Arraste o recibo para aqui</span>
+                                    <span class="dfp-co-proof__hint">JPG, PNG, WEBP ou PDF — máx. 5 MB</span>
+                                    <button type="button" class="tf-btn-line text-caption" id="transferProofPick">Escolher comprovativo</button>
+                                    <span class="dfp-co-proof__name" id="transferProofName">Nenhum ficheiro escolhido</span>
+                                    <ul class="dfp-co-proof__types">
+                                        <li>JPG</li>
+                                        <li>PNG</li>
+                                        <li>WEBP</li>
+                                        <li>PDF</li>
+                                    </ul>
+                                    <input class="dfp-co-file" type="file" name="transfer_proof" id="transfer_proof" accept=".jpg,.jpeg,.png,.webp,.pdf,image/*,application/pdf" aria-labelledby="transferProofPick">
+                                </div>
+                                @error('transfer_proof') <span class="dfp-co-field-error">{{ $message }}</span> @enderror
+                                <button type="submit" class="tf-btn animate-btn size3 rounded-6 w-100 dfp-co-proof__submit">Enviar comprovativo</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -136,19 +156,65 @@
 @push('scripts')
 <script>
 (function () {
-    var form = document.getElementById('transfer_proof')?.form;
+    var zone = document.getElementById('transferProofZone');
     var proof = document.getElementById('transfer_proof');
     var proofName = document.getElementById('transferProofName');
     var pick = document.getElementById('transferProofPick');
-    if (!proof || !proofName || !pick) return;
-    pick.addEventListener('click', function () { proof.click(); });
+    var form = proof ? proof.form : null;
+    if (!zone || !proof || !proofName || !pick) return;
+
+    var sizeLabel = function (bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1048576) return Math.max(1, Math.round(bytes / 1024)) + ' KB';
+        return (bytes / 1048576).toFixed(1).replace('.', ',') + ' MB';
+    };
+
+    var showFile = function (file) {
+        if (!file) {
+            proofName.textContent = 'Nenhum ficheiro escolhido';
+            zone.classList.remove('is-ready');
+            return;
+        }
+        proofName.textContent = file.name + ' · ' + sizeLabel(file.size);
+        zone.classList.add('is-ready');
+        zone.classList.remove('is-invalid');
+    };
+
+    var openPicker = function () { proof.click(); };
+
+    pick.addEventListener('click', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        openPicker();
+    });
+    zone.addEventListener('click', function (event) {
+        if (event.target.closest('button')) return;
+        openPicker();
+    });
+    zone.addEventListener('dragover', function (event) {
+        event.preventDefault();
+        zone.classList.add('is-drag');
+    });
+    zone.addEventListener('dragleave', function () {
+        zone.classList.remove('is-drag');
+    });
+    zone.addEventListener('drop', function (event) {
+        event.preventDefault();
+        zone.classList.remove('is-drag');
+        var file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
+        if (!file) return;
+        var transfer = new DataTransfer();
+        transfer.items.add(file);
+        proof.files = transfer.files;
+        showFile(file);
+    });
     proof.addEventListener('change', function () {
-        var file = proof.files && proof.files[0];
-        proofName.textContent = file ? file.name : 'Nenhum ficheiro escolhido';
+        showFile(proof.files && proof.files[0]);
     });
     form?.addEventListener('submit', function (event) {
         if (proof.files && proof.files.length) return;
         event.preventDefault();
+        zone.classList.add('is-invalid');
         proofName.textContent = 'Anexe o comprovativo da transferência bancária.';
     });
 })();
