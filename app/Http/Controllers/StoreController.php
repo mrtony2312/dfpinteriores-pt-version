@@ -102,7 +102,7 @@ class StoreController extends Controller
                     ? asset($thumb->images->first()->path)
                     : '/omniva/images/category/pet/cate-1.jpg',
             ];
-        })->filter()->values();
+        })->filter(fn ($row) => is_array($row) && $row['count'] > 0)->values();
 
         return view('home', [
             'bestSellers' => $bestSellers,
@@ -417,11 +417,13 @@ class StoreController extends Controller
     {
 
         if ($category = Category::where('slug', $slug)->first()) {
-            if ($json = $this->listingJson($slug)) {
-                return $json;
-            }
+            if (in_array((int) $category->id, Category::idsWithProducts(), true)) {
+                if ($json = $this->listingJson($slug)) {
+                    return $json;
+                }
 
-            return $this->renderCategory($category);
+                return $this->renderCategory($category);
+            }
         }
         if ($product = Product::where('slug', $slug)->first()) {
 
@@ -470,9 +472,13 @@ class StoreController extends Controller
             return response()->json(['results' => [['hits' => []], ['hits' => []]]]);
         }
 
-        $cats = Category::where('name', 'like', "%{$q}%")->orderBy('name')->limit(8)
+        $cats = Category::query()
+            ->whereIn('id', Category::idsWithProducts())
+            ->where('name', 'like', "%{$q}%")
+            ->orderBy('name')
+            ->limit(8)
             ->get(['name', 'slug'])
-            ->map(fn ($c) => ['name' => $c->name, 'title' => $c->name, 'link' => $c->slug, 'slug' => $c->slug])
+            ->map(fn ($c) => ['name' => $c->displayName(), 'title' => $c->displayName(), 'link' => $c->slug, 'slug' => $c->slug])
             ->all();
 
         $prods = Product::query()->with('images')
@@ -498,13 +504,13 @@ class StoreController extends Controller
         // fil d'Ariane : chaîne des catégories parentes
         $crumbs = [];
         for ($c = $category; $c; $c = $c->parent) {
-            array_unshift($crumbs, ['nome' => Str::upper($c->name), 'link' => $c->slug]);
+            array_unshift($crumbs, ['nome' => Str::upper($c->displayName()), 'link' => $c->slug]);
         }
         array_pop($crumbs);   // la catégorie courante est déjà le <h1>
 
         return $this->fillCategory(
-            Str::upper($category->name).' | DFP Interiores',
-            $category->name,
+            Str::upper($category->displayName()).' | DFP Interiores',
+            $category->displayName(),
             $products,
             $category->slug,
             $crumbs
@@ -845,15 +851,8 @@ HTML;
             ];
         }
 
-        $relatedProducts = Product::query()
-            ->with('images')
-            ->where('id', '!=', $product->id)
-            ->when($product->category_id, fn ($q) => $q->where('category_id', $product->category_id))
-            ->where('price', '>', 0)
-            ->whereHas('images')
-            ->inRandomOrder()
-            ->limit(8)
-            ->get();
+        $product->loadMissing('categories');
+        $relatedProducts = Product::similarTo([$product]);
 
         $breadcrumbs = collect([
             ['label' => 'Início', 'url' => route('home')],

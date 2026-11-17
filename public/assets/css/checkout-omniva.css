@@ -1,4 +1,4 @@
-/* Checkout Omniva — ajustements DFP */
+/* Compléments checkout DFP à l'intérieur du gabarit Omniva. */
 
 .dfp-co-errors {
     background: #ffe9e9;
@@ -14,245 +14,105 @@
     padding: 0;
 }
 
-.dfp-co-bank {
-    background: #f7f5f1;
-    border: 1px solid #e8e4dc;
-    border-radius: 10px;
-    padding: 14px 16px;
+.dfp-co-field-error {
+    display: block;
+    margin-top: 4px;
+    color: #d21313;
+    font-size: 12px;
 }
 
-.dfp-co-bank-title {
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .04em;
-    color: #666;
-    margin-bottom: 10px;
+.tf-field-input.is-invalid,
+.tf-select select.is-invalid {
+    border-color: #d21313 !important;
+}
+
+.dfp-co-bank {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 16px;
+    padding: 14px 16px;
+    border: 1px solid var(--line, #e5e5e5);
+    border-radius: 4px;
 }
 
 .dfp-co-bank-row {
     display: flex;
     justify-content: space-between;
     gap: 12px;
-    padding: 6px 0;
     font-size: 13px;
-    border-bottom: 1px solid #ebe7df;
-}
-
-.dfp-co-bank-row:last-of-type {
-    border-bottom: 0;
 }
 
 .dfp-co-bank-row span {
-    color: #777;
+    color: #686868;
+}
+
+.dfp-co-bank-row strong {
+    text-align: right;
+    word-break: break-word;
 }
 
 .dfp-co-bank-row .iban {
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     letter-spacing: .02em;
-    word-break: break-all;
-    text-align: right;
 }
 
 .dfp-co-proof {
-    background: #f7f5f1;
-    border: 1px solid #e8e4dc;
-    border-radius: 10px;
-    padding: 14px 16px;
-}
-
-.dfp-co-proof.is-invalid {
-    border-color: #f3b4b4;
-    background: #fff8f8;
-}
-
-.dfp-co-proof__head {
-    margin-bottom: 12px;
-}
-
-.dfp-co-proof__badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 2px 8px;
-    border-radius: 4px;
-    background: #1a1a1a;
-    color: #fff;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: .05em;
-    text-transform: uppercase;
-}
-
-.dfp-co-proof__title {
-    margin: 8px 0 4px;
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .04em;
-    color: #666;
-}
-
-.dfp-co-proof__desc {
-    margin: 0;
-    line-height: 1.45;
-}
-
-.dfp-co-proof__drop {
     position: relative;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    min-height: 136px;
-    padding: 20px 16px;
-    border: 1.5px dashed #d5cfc4;
-    border-radius: 10px;
-    background: #fff;
-    text-align: center;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 16px;
+    border: 1px dashed var(--line, #d5d5d5);
+    border-radius: 4px;
     cursor: pointer;
-    transition: border-color .2s ease, background .2s ease, box-shadow .2s ease;
 }
 
-.dfp-co-proof__drop:hover,
-.dfp-co-proof__drop.is-dragover {
-    border-color: #e5007d;
-    background: #fffafc;
-    box-shadow: inset 0 0 0 1px rgba(229, 0, 125, .12);
+.dfp-co-proof.is-invalid {
+    border-color: #d21313;
 }
 
-.dfp-co-proof__drop.has-file {
-    display: none;
-}
-
-.dfp-co-proof__input {
+.dfp-co-file {
     position: absolute;
-    inset: 0;
-    opacity: 0;
-    cursor: pointer;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
 
-.dfp-co-proof__icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: #e5007d;
-    color: #fff;
-    font-size: 18px;
-}
-
-.dfp-co-proof__cta {
-    display: grid;
-    gap: 2px;
-    color: #1a1a1a;
-    font-size: 13px;
-}
-
-.dfp-co-proof__cta strong {
-    font-size: 14px;
+.dfp-co-proof__title {
+    font-weight: 600;
 }
 
 .dfp-co-proof__hint,
-.dfp-co-proof__error {
+.dfp-co-proof__name {
+    color: #686868;
     font-size: 12px;
 }
 
-.dfp-co-proof__hint {
-    color: #888;
+.dfp-billing[hidden] {
+    display: none !important;
 }
 
-.dfp-co-proof__error {
-    margin: 10px 0 0;
-    color: #d21313;
-    font-weight: 600;
+.mt-16 {
+    margin-top: 16px;
 }
 
-.dfp-co-proof__preview {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 12px;
-    border-radius: 10px;
-    background: #fff;
-    border: 1px solid #e8e4dc;
-}
-
-.dfp-co-proof__preview-media {
-    width: 56px;
-    height: 56px;
+.tf-page-cart-sidebar .order-box .order-item .img-product {
+    flex: 0 0 72px;
+    background: #f6f6f6;
     border-radius: 8px;
-    overflow: hidden;
-    background: #f7f5f1;
-    border: 1px solid #ebe7df;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
 }
 
-.dfp-co-proof__preview-media img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.dfp-co-proof__pdf {
-    font-size: 11px;
-    font-weight: 800;
-    color: #e5007d;
-    letter-spacing: .06em;
-}
-
-.dfp-co-proof__preview-meta {
-    min-width: 0;
-}
-
-.dfp-co-proof__file {
-    margin: 0 0 4px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #1a1a1a;
-    word-break: break-all;
-}
-
-.dfp-co-proof__clear {
-    border: 0;
-    background: transparent;
-    padding: 0;
-    color: #e5007d;
-    font-size: 12px;
-    cursor: pointer;
-}
-
-.tf-field-input.is-invalid,
-.dfp-co-proof input.is-invalid {
-    border-color: #d21313 !important;
-}
-
-.mb-20 { margin-bottom: 20px; }
-.mt-6 { margin-top: 6px; }
-.mt-10 { margin-top: 10px; }
-.mt-12 { margin-top: 12px; }
-.mt-16 { margin-top: 16px; }
-.mb-8 { margin-bottom: 8px; }
-.mb-16 { margin-bottom: 16px; }
-
-.list-order-product .img-product img {
-    width: 64px;
-    height: 80px;
-    object-fit: cover;
-    border-radius: 6px;
-}
-
-.flat-spacing-2.bg-main {
-    background: linear-gradient(90deg, #8b0038 0%, #e5007d 50%, #7a002f 100%);
-}
-
-.flat-spacing-2.bg-main .box-icon_V01 .title,
-.flat-spacing-2.bg-main .box-icon_V01 .text,
-.flat-spacing-2.bg-main .box-icon_V01 .icon {
-    color: #fff;
+.tf-page-cart-sidebar .order-box .order-item .img-product img {
+    display: block;
+    width: 72px;
+    height: 94px;
+    max-width: none;
+    object-fit: contain;
+    background: #f6f6f6;
 }

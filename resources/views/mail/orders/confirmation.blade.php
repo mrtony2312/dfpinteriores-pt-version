@@ -5,8 +5,8 @@
 Recebemos a sua encomenda **{{ $order->ref }}** e o comprovativo de transferência.
 A nossa equipa vai validar o pagamento e contactá-lo se for necessário.
 @else
-Recebemos a sua encomenda **{{ $order->ref }}** e está a ser processada.
-Vai receber uma nova mensagem assim que for expedida.
+Recebemos a sua encomenda **{{ $order->ref }}**.
+Faça de imediato a transferência bancária e envie o comprovativo na página da encomenda.
 @endif
 
 <x-mail::panel>
@@ -61,8 +61,8 @@ Dados da conta:
 Recebemos o seu comprovativo de pagamento (**{{ $order->transfer_proof_name }}**). O ficheiro segue em anexo neste email (recibo da transação).
 A nossa equipa vai validar a transferência e processar a encomenda — não é necessário efetuar um novo pagamento.
 @else
-Efetue a transferência bancária no valor de **{{ $order->money($order->total) }}** com o descritivo **{{ $order->ref }}**.
-Assim que confirmarmos o pagamento, a encomenda avança para preparação.
+Faça de imediato a transferência bancária no valor de **{{ $order->money($order->total) }}** com o descritivo **{{ $order->ref }}**.
+Depois envie o comprovativo na página da encomenda. Assim que confirmarmos o pagamento, a encomenda avança para preparação.
 @endif
 
 @php

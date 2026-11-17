@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\Product;
-use Illuminate\Support\Arr;
+use App\Models\ProductImage;
 use Illuminate\Support\Str;
 
 /**
@@ -44,6 +44,7 @@ class CartService
         if ($decoded && Str::startsWith($decoded, 'id:')) {
             return (int) substr($decoded, 3);
         }
+
         return null;
     }
 
@@ -84,7 +85,7 @@ class CartService
             }
         }
 
-        $img = optional($product->images->first())->filename;
+        $img = $this->pictureFor($product, is_array($row) ? $row : null);
 
         $lines = $this->lines();
         $key = $productId.':'.($variation ?? '0');
@@ -93,14 +94,15 @@ class CartService
             $lines[$key]['qtd'] += $qtd;
         } else {
             $lines[$key] = [
-                'linhaid'     => $key,
-                'product_id'  => $productId,
-                'variation'   => $variation,
-                'qtd'         => $qtd,
-                'preco'       => $preco,
-                'nome'        => $product->name,
-                'seo'         => $product->slug,
-                'image'       => $img ? 'products/'.$img : null,
+                'linhaid' => $key,
+                'product_id' => $productId,
+                'variation' => $variation,
+                'qtd' => $qtd,
+                'preco' => $preco,
+                'nome' => $product->name,
+                'seo' => $product->slug,
+                'image' => $img ? 'products/'.$img->filename : null,
+                'image_url' => $this->publicImageUrl($img),
                 'variation_label' => $label,
             ];
         }
@@ -143,34 +145,36 @@ class CartService
         foreach ($this->lines() as $l) {
             $total = round($l['preco'] * $l['qtd'], 2);
             $subtotal += $total;
+            $photo = $this->linePhoto($l);
             $items[] = [
-                'linhaid'            => $l['linhaid'],
-                'nome'               => $l['nome'],
-                'seo'                => $l['seo'],
-                'images'             => [$l['image'] ?: 'Desconto.jpg'],
-                'preco'              => (float) $l['preco'],
-                'qtd'                => (int) $l['qtd'],
-                'total'              => number_format($total, 2, '.', ''),
-                'variation'          => $l['variation_label'] ?: null,
-                'valor_opcionais'    => 0,
-                'stock'              => 999,
+                'linhaid' => $l['linhaid'],
+                'nome' => $l['nome'],
+                'seo' => $l['seo'],
+                'images' => [$photo['legacy']],
+                'image_url' => $photo['url'],
+                'preco' => (float) $l['preco'],
+                'qtd' => (int) $l['qtd'],
+                'total' => number_format($total, 2, '.', ''),
+                'variation' => $l['variation_label'] ?: null,
+                'valor_opcionais' => 0,
+                'stock' => 999,
                 'vende_apenas_stock' => 'N',
-                'personalizavel'     => false,
-                'Customtxt'          => null,
-                'extra'              => null,
-                'desconto'           => null,
+                'personalizavel' => false,
+                'Customtxt' => null,
+                'extra' => null,
+                'desconto' => null,
             ];
         }
 
         return [
-            'desconto'        => 0,
-            'subtotal'        => round($subtotal, 2),
-            'total'           => round($subtotal, 2),
-            'items'           => $items,
-            'cupao'           => null,
+            'desconto' => 0,
+            'subtotal' => round($subtotal, 2),
+            'total' => round($subtotal, 2),
+            'items' => $items,
+            'cupao' => null,
             'tipos_pagamento' => [],
-            'tipos_entrega'   => [],
-            'prazo_entrega'   => [],
+            'tipos_entrega' => [],
+            'prazo_entrega' => [],
         ];
     }
 
@@ -178,8 +182,104 @@ class CartService
     public function dataLayer(string $event = 'add_to_cart'): string
     {
         return json_encode([
-            'event'    => $event,
+            'event' => $event,
             'event_id' => Str::random(10),
         ]);
+    }
+
+    /**
+     * Photo affichée : celle de la couleur choisie, sinon la première du produit.
+     *
+     * @param  array<string, mixed>  $line
+     * @return array{legacy: string, url: string}
+     */
+    private function linePhoto(array $line): array
+    {
+        $stored = is_string($line['image'] ?? null) && $line['image'] !== ''
+            ? $line['image']
+            : 'Desconto.jpg';
+        $storedUrl = is_string($line['image_url'] ?? null) && $line['image_url'] !== ''
+            ? $line['image_url']
+            : null;
+
+        $productId = (int) ($line['product_id'] ?? 0);
+        if ($productId <= 0) {
+            return [
+                'legacy' => $stored,
+                'url' => $storedUrl ?? '/assets/images/no-photo.svg',
+            ];
+        }
+
+        $variation = isset($line['variation']) && $line['variation'] !== '' && $line['variation'] !== null
+            ? (int) $line['variation']
+            : null;
+        $product = Product::with('images')->find($productId);
+        $row = $product ? $this->variationRow($product, $variation) : null;
+        $image = $product ? $this->pictureFor($product, $row) : null;
+        $url = $this->publicImageUrl($image);
+
+        if ($url === null) {
+            return [
+                'legacy' => $stored,
+                'url' => $storedUrl ?? '/assets/images/no-photo.svg',
+            ];
+        }
+
+        return [
+            'legacy' => 'products/'.$image->filename,
+            'url' => $url,
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function variationRow(Product $product, ?int $variation): ?array
+    {
+        if ($variation === null) {
+            return null;
+        }
+
+        foreach ((array) data_get($product->source_payload, 'variations.variations', []) as $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+            if ((string) data_get($row, 'pid') === (string) $variation) {
+                return $row;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param  array<string, mixed>|null  $row
+     */
+    private function pictureFor(Product $product, ?array $row): ?ProductImage
+    {
+        $names = array_values(array_filter([
+            basename((string) data_get($row, 'COR.thumbnail', '')),
+            basename((string) data_get($row, 'image.name', '')),
+        ], fn (string $name) => $name !== '' && $name !== '.' && $name !== '/'));
+
+        foreach ($names as $name) {
+            $match = $product->images->first(fn (ProductImage $image) => $image->filename === $name);
+            if ($match instanceof ProductImage) {
+                return $match;
+            }
+        }
+
+        $existing = $product->images->first(fn (ProductImage $image) => is_string($image->path) && is_file(public_path($image->path)));
+
+        return $existing instanceof ProductImage ? $existing : $product->images->first();
+    }
+
+    private function publicImageUrl(?ProductImage $image): ?string
+    {
+        if (! $image || ! is_string($image->path) || $image->path === '') {
+            return null;
+        }
+
+        return '/'.ltrim(str_replace('\\', '/', $image->path), '/');
     }
 }

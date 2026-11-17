@@ -52,8 +52,37 @@ class AppServiceProvider extends ServiceProvider
             if (! Schema::hasTable('categories')) {
                 return;
             }
-            $view->with('navCategories', Category::whereNull('parent_id')
-                ->with('children')->orderBy('name')->get());
+            $withProducts = Category::idsWithProducts();
+            $preferred = [
+                'sofas',
+                'mobiliario',
+                'decoracao',
+                'descanso',
+                'mobiliario-de-exterior',
+                'mobiliario-2',
+                'decoracao-1',
+            ];
+            $seen = [];
+            $view->with('navCategories', Category::query()
+                ->whereNull('parent_id')
+                ->whereIn('id', $withProducts)
+                ->with(['children' => fn ($children) => $children->whereIn('categories.id', $withProducts)])
+                ->get()
+                ->sortBy(function (Category $category) use ($preferred): int {
+                    $index = array_search($category->slug, $preferred, true);
+
+                    return $index === false ? 100 : $index;
+                })
+                ->filter(function (Category $category) use (&$seen): bool {
+                    $key = mb_strtolower($category->displayName());
+                    if (isset($seen[$key])) {
+                        return false;
+                    }
+                    $seen[$key] = true;
+
+                    return true;
+                })
+                ->values());
         });
         //
     }

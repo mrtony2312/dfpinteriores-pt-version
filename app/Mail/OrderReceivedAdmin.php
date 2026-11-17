@@ -19,8 +19,10 @@ class OrderReceivedAdmin extends Mailable
 
     public function envelope(): Envelope
     {
+        $prefix = $this->order->transfer_proof_path ? '[Comprovativo]' : '[Nova encomenda]';
+
         return new Envelope(
-            subject: '[Nova encomenda] '.$this->order->ref.' — '.number_format((float) $this->order->total, 2, ',', ' ').'€',
+            subject: $prefix.' '.$this->order->ref.' — '.number_format((float) $this->order->total, 2, ',', ' ').'€',
             replyTo: [$this->order->email],
         );
     }

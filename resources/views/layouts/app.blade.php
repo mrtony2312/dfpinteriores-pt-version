@@ -138,7 +138,7 @@
     <link href="/assets/css/pt/feira.css?id=2" rel="stylesheet">
     <link href="/assets/css/shop.css?v=16" rel="stylesheet">
     <link rel="stylesheet" href="/assets/css/footer-classic.css?v=3">
-    <link rel="stylesheet" href="/assets/css/site-nav.css?v=6">
+    <link rel="stylesheet" href="/assets/css/site-nav.css?v=7">
 
 
 

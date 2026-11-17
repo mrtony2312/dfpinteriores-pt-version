@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
+use App\Models\Product;
 use App\Support\Seo;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -51,6 +52,16 @@ class SeoCanonicalTest extends TestCase
             'slug' => 'sofas',
             'parent_id' => null,
         ]);
+        Category::query()->create([
+            'id' => 2,
+            'name' => 'Vazia',
+            'slug' => 'vazia',
+            'parent_id' => null,
+        ]);
+        Product::factory()->create([
+            'category_id' => 1,
+            'category_slug' => 'sofas',
+        ]);
 
         $response = $this->get('/sitemap.xml');
         $response->assertOk();
@@ -58,6 +69,7 @@ class SeoCanonicalTest extends TestCase
 
         $this->assertStringContainsString('https://dfpinteriores.com/</loc>', $body);
         $this->assertStringContainsString('https://dfpinteriores.com/sofas</loc>', $body);
+        $this->assertStringNotContainsString('https://dfpinteriores.com/vazia</loc>', $body);
         $this->assertStringContainsString('https://dfpinteriores.com/descontos70</loc>', $body);
         $this->assertDoesNotMatchRegularExpression('/<loc>[^<]*\?[^<]*<\/loc>/', $body);
     }

@@ -1,5 +1,6 @@
 {{-- Navigation commune (identique à la home Omniva) --}}
 <div class="dfp-site-nav">
+@include('partials.shipping-marquee')
 <div class="tf-topbar bg-dfp sm-d-none">
     <div class="container-full">
         <div class="row">
@@ -61,10 +62,10 @@
                             <li class="menu-item">
                                 <a href="{{ route('home') }}" class="item-link"><span class="text">Início</span></a>
                             </li>
-                            @foreach (($navCategories ?? collect())->take(6) as $cat)
+                            @foreach (($navCategories ?? collect()) as $cat)
                                 <li class="menu-item">
                                     <a href="/{{ $cat->slug }}" class="item-link">
-                                        <span class="text">{{ $cat->name }}</span>
+                                        <span class="text">{{ $cat->displayName() }}</span>
                                         @if ($cat->children->isNotEmpty())
                                             <i class="icon icon-ArrowCaretDown"></i>
                                         @endif
@@ -75,7 +76,7 @@
                                                 @foreach ($cat->children->take(10) as $child)
                                                     <li>
                                                         <a href="/{{ $child->slug }}" class="sub-menu_link text-caption">
-                                                            <span class="text">{{ $child->name }}</span>
+                                                            <span class="text">{{ $child->displayName() }}</span>
                                                         </a>
                                                     </li>
                                                 @endforeach
@@ -123,8 +124,6 @@
     </div>
 </header>
 
-@include('partials.shipping-marquee')
-
 <div class="offcanvas offcanvas-start canvas-mb" id="mobileMenu">
     <div class="canvas-header">
         <a href="{{ route('home') }}" class="logo-text">DFP <span>Interiores</span></a>
@@ -137,9 +136,9 @@
         <div class="mb-content-top">
             <ul class="nav-ul-mb" id="wrapper-menu-navigation">
                 <li class="nav-mb-item"><a href="{{ route('home') }}" class="mb-menu-link">Início</a></li>
-                @foreach (($navCategories ?? collect())->take(8) as $cat)
+                @foreach (($navCategories ?? collect()) as $cat)
                     <li class="nav-mb-item">
-                        <a href="/{{ $cat->slug }}" class="mb-menu-link">{{ $cat->name }}</a>
+                        <a href="/{{ $cat->slug }}" class="mb-menu-link">{{ $cat->displayName() }}</a>
                     </li>
                 @endforeach
                 <li class="nav-mb-item"><a href="/descontos70" class="mb-menu-link">Descontos até 70%</a></li>

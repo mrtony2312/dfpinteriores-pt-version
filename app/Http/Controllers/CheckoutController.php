@@ -5,11 +5,14 @@ namespace App\Http\Controllers;
 use App\Mail\OrderConfirmation;
 use App\Mail\OrderReceivedAdmin;
 use App\Models\Order;
+use App\Models\Product;
 use App\Models\SiteSetting;
 use App\Services\CartService;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -64,7 +67,6 @@ class CheckoutController extends Controller
                 'email' => old('email', $user->email ?? ''),
                 'phone' => old('phone', $user->phone ?? ''),
             ],
-            'bank' => self::bankDetails(),
             'paymentOptions' => self::PAYMENT,
         ]);
     }
@@ -86,9 +88,10 @@ class CheckoutController extends Controller
             'address' => ['required', 'string', 'max:255'],
             'postal_code' => ['nullable', 'string', 'max:16'],
             'city' => ['required', 'string', 'max:255'],
+            'district' => ['nullable', 'string', 'max:80'],
             'notes' => ['nullable', 'string', 'max:2000'],
+            'shipping_method' => ['nullable', Rule::in(array_keys(self::SHIPPING))],
             'payment_method' => ['required', Rule::in(array_keys(self::PAYMENT))],
-            'transfer_proof' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf,webp', 'max:5120'],
             'terms' => ['accepted'],
         ] + ($billingSame ? [] : [
             'billing_name' => ['required', 'string', 'min:2', 'max:255'],
@@ -100,9 +103,6 @@ class CheckoutController extends Controller
         $validator = Validator::make($request->all(), $rules, [
             'payment_method.required' => 'Selecione o método de pagamento.',
             'payment_method.in' => 'Método de pagamento inválido.',
-            'transfer_proof.required' => 'Anexe o comprovativo da transferência bancária.',
-            'transfer_proof.mimes' => 'O comprovativo deve ser JPG, PNG, WEBP ou PDF.',
-            'transfer_proof.max' => 'O comprovativo não pode exceder 5 MB.',
         ]);
 
         if ($validator->fails()) {
@@ -113,19 +113,19 @@ class CheckoutController extends Controller
 
         $data = $validator->validated();
 
-        $shipMethod = 'ENTREGA';
+        $district = trim((string) ($data['district'] ?? ''));
+        if ($district !== '') {
+            $withDistrict = $data['address'].', '.$district;
+            if (mb_strlen($withDistrict) <= 255) {
+                $data['address'] = $withDistrict;
+            }
+        }
+
+        $shipMethod = $data['shipping_method'] ?? 'ENTREGA';
         $payMethod = $data['payment_method'];
         $shipCost = self::SHIPPING[$shipMethod]['cost'];
         $subtotal = (float) $cart['subtotal'];
         $total = $subtotal + $shipCost;
-
-        $proofPath = null;
-        $proofName = null;
-        if ($request->hasFile('transfer_proof')) {
-            $file = $request->file('transfer_proof');
-            $proofName = $file->getClientOriginalName();
-            $proofPath = $file->store('transfer-proofs/'.now()->format('Y/m'), 'local');
-        }
 
         $order = Order::create([
             'ref' => $this->makeRef(),
@@ -150,8 +150,6 @@ class CheckoutController extends Controller
             'total' => $total,
             'status' => 'AGUARDAR',
             'items_snapshot' => $cart['items'],
-            'transfer_proof_path' => $proofPath,
-            'transfer_proof_name' => $proofName,
         ]);
 
         foreach ($cart['items'] as $it) {
@@ -180,16 +178,101 @@ class CheckoutController extends Controller
 
     public function success(string $ref)
     {
-        $order = Order::with('items')->where('ref', $ref)->firstOrFail();
-
-        abort_unless(session('last_order_ref') === $ref || auth()->id() === $order->user_id, 403);
+        $order = $this->orderForCustomer($ref);
 
         return view('pages.checkout-sucesso', [
             'order' => $order,
             'shipping' => self::SHIPPING,
             'payment' => self::PAYMENT,
             'bank' => self::bankDetails(),
+            'similarProducts' => $this->similarProducts($order),
         ]);
+    }
+
+    public function uploadProof(Request $request, string $ref)
+    {
+        $order = $this->orderForCustomer($ref);
+
+        $request->validate([
+            'transfer_proof' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf,webp', 'max:5120'],
+        ], [
+            'transfer_proof.required' => 'Anexe o comprovativo da transferência bancária.',
+            'transfer_proof.mimes' => 'O comprovativo deve ser JPG, PNG, WEBP ou PDF.',
+            'transfer_proof.max' => 'O comprovativo não pode exceder 5 MB.',
+        ]);
+
+        $previous = $order->transfer_proof_path;
+        $file = $request->file('transfer_proof');
+        $path = $file->store('transfer-proofs/'.now()->format('Y/m'), 'local');
+
+        $order->update([
+            'transfer_proof_path' => $path,
+            'transfer_proof_name' => $file->getClientOriginalName(),
+        ]);
+
+        if (is_string($previous) && $previous !== '' && $previous !== $path) {
+            Storage::disk('local')->delete($previous);
+        }
+
+        try {
+            Mail::to(config('mail.admin_address'))->send(new OrderReceivedAdmin($order->fresh()));
+        } catch (\Throwable $e) {
+            Log::error('Envoi comprovativo '.$order->ref.' échoué : '.$e->getMessage());
+        }
+
+        return redirect()
+            ->route('checkout.success', $order->ref)
+            ->with('proof_sent', true);
+    }
+
+    private function similarProducts(Order $order): Collection
+    {
+        $snapshot = is_array($order->items_snapshot) ? $order->items_snapshot : [];
+        $ids = [];
+        $slugs = [];
+
+        foreach ($snapshot as $item) {
+            if (! is_array($item)) {
+                continue;
+            }
+            if (is_string($item['seo'] ?? null) && $item['seo'] !== '') {
+                $slugs[] = $item['seo'];
+            }
+            $line = (string) ($item['linhaid'] ?? '');
+            $id = (int) strtok($line, ':');
+            if ($id > 0) {
+                $ids[] = $id;
+            }
+        }
+
+        if ($ids === [] && $slugs === []) {
+            return new Collection;
+        }
+
+        $sources = Product::query()
+            ->with('categories')
+            ->where(function ($query) use ($ids, $slugs): void {
+                if ($ids !== []) {
+                    $query->whereIn('id', $ids);
+                }
+                if ($slugs !== []) {
+                    $ids === []
+                        ? $query->whereIn('slug', $slugs)
+                        : $query->orWhereIn('slug', $slugs);
+                }
+            })
+            ->get();
+
+        return Product::similarTo($sources);
+    }
+
+    private function orderForCustomer(string $ref): Order
+    {
+        $order = Order::with('items')->where('ref', $ref)->firstOrFail();
+
+        abort_unless(session('last_order_ref') === $ref || auth()->id() === $order->user_id, 403);
+
+        return $order;
     }
 
     private function makeRef(): string

@@ -197,27 +197,27 @@ div.Header {
     background: transparent;
 }
 
-/* Navbar principale — dégradé rouge marque */
+/* Navbar principale — fond blanc */
 .dfp-site-nav .tf-header,
 header.tf-header {
-    background: linear-gradient(90deg, #8b0038 0%, #c4005f 28%, #e5007d 55%, #b8006a 78%, #7a002f 100%);
-    box-shadow: 0 2px 14px rgba(139, 0, 56, .28);
+    background: #fff;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .08);
 }
 
 .dfp-site-nav .tf-header .header-inner,
 header.tf-header .header-inner {
-    background: transparent;
-    border-bottom: 0 !important;
+    background: #fff;
+    border-bottom: 1px solid #eee !important;
 }
 
 .dfp-site-nav .logo-text,
 header.tf-header .logo-text {
-    color: #fff;
+    color: #1a1a1a;
 }
 
 .dfp-site-nav .logo-text span,
 header.tf-header .logo-text span {
-    color: #ffd6ec;
+    color: #e5007d;
 }
 
 .dfp-site-nav .box-nav-menu .item-link,
@@ -226,14 +226,14 @@ header.tf-header .logo-text span {
 header.tf-header .box-nav-menu .item-link,
 header.tf-header .box-nav-menu .item-link .text,
 header.tf-header .box-nav-menu .item-link .icon {
-    color: #fff !important;
+    color: #1a1a1a !important;
 }
 
 .dfp-site-nav .box-nav-menu .item-link:hover .text,
 .dfp-site-nav .box-nav-menu .item-link:hover .icon,
 header.tf-header .box-nav-menu .item-link:hover .text,
 header.tf-header .box-nav-menu .item-link:hover .icon {
-    color: #ffe6f3 !important;
+    color: #e5007d !important;
 }
 
 .dfp-site-nav .nav-icon-item,
@@ -246,20 +246,20 @@ header.tf-header .nav-icon-item .icon,
 header.tf-header .nav-icon-item i,
 header.tf-header .box-btn-open-menu a,
 header.tf-header .box-btn-open-menu .icon {
-    color: #fff !important;
+    color: #1a1a1a !important;
 }
 
 .dfp-site-nav .nav-icon-item:hover,
 .dfp-site-nav .box-btn-open-menu a:hover,
 header.tf-header .nav-icon-item:hover,
 header.tf-header .box-btn-open-menu a:hover {
-    background: rgba(255, 255, 255, .14) !important;
+    background: #f3f3f3 !important;
 }
 
 .dfp-site-nav .nav-icon-item .number-order,
 header.tf-header .nav-icon-item .number-order {
-    background: #fff;
-    color: #c4005f;
+    background: #e5007d;
+    color: #fff;
 }
 
 /*

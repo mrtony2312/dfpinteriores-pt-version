@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Database\Factories\ProductFactory;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -78,5 +79,47 @@ class Product extends Model
     public function getHasDiscountAttribute(): bool
     {
         return $this->price_before !== null && (float) $this->price_before > (float) $this->price;
+    }
+
+    /**
+     * Produits des mêmes catégories, hors articles déjà affichés ou commandés.
+     *
+     * @param  iterable<int, Product>  $sources
+     */
+    public static function similarTo(iterable $sources, int $limit = 8): Collection
+    {
+        $sources = collect($sources)->filter(fn ($product) => $product instanceof self)->values();
+        if ($sources->isEmpty()) {
+            return new Collection;
+        }
+
+        $exclude = $sources->pluck('id')->map(fn ($id) => (int) $id)->all();
+        $categoryIds = $sources->flatMap(function (self $product): array {
+            $ids = [(int) $product->category_id];
+            if ($product->relationLoaded('categories')) {
+                foreach ($product->categories as $category) {
+                    $ids[] = (int) $category->id;
+                }
+            }
+
+            return $ids;
+        })->filter()->unique()->values()->all();
+
+        if ($categoryIds === []) {
+            return new Collection;
+        }
+
+        return static::query()
+            ->with('images')
+            ->where(function ($query) use ($categoryIds): void {
+                $query->whereIn('category_id', $categoryIds)
+                    ->orWhereHas('categories', fn ($categories) => $categories->whereIn('categories.id', $categoryIds));
+            })
+            ->whereNotIn('id', $exclude)
+            ->where('price', '>', 0)
+            ->whereHas('images')
+            ->limit(min(8, max(1, $limit)))
+            ->inRandomOrder()
+            ->get();
     }
 }

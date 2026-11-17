@@ -39,7 +39,9 @@ class CheckoutPageTest extends TestCase
             ->assertSee('Finalizar encomenda', false)
             ->assertSee('Sofá Teste Checkout', false)
             ->assertSee('Transferência bancária', false)
-            ->assertSee('Comprovativo de transferência', false);
+            ->assertSee('Email', false)
+            ->assertDontSee('Informação de contacto', false)
+            ->assertDontSee('Comprovativo de transferência', false);
     }
 
     public function test_checkout_places_order_with_transfer_proof_and_mails(): void
@@ -71,16 +73,13 @@ class CheckoutPageTest extends TestCase
             'postal_code' => '7080-035',
             'city' => 'Vendas Novas',
             'payment_method' => 'VIREMENT',
-            'transfer_proof' => UploadedFile::fake()->image('comprovativo.jpg', 800, 600),
             'terms' => '1',
         ]);
 
         $order = Order::query()->first();
         $this->assertNotNull($order);
         $response->assertRedirect(route('checkout.success', $order->ref));
-        $this->assertNotNull($order->transfer_proof_path);
-        $this->assertSame('comprovativo.jpg', $order->transfer_proof_name);
-        Storage::disk('local')->assertExists($order->transfer_proof_path);
+        $this->assertNull($order->transfer_proof_path);
 
         Mail::assertSent(OrderConfirmation::class, function (OrderConfirmation $mail) use ($order) {
             return $mail->hasTo('cliente@example.com') && $mail->order->is($order);
@@ -88,7 +87,26 @@ class CheckoutPageTest extends TestCase
 
         Mail::assertSent(OrderReceivedAdmin::class, function (OrderReceivedAdmin $mail) use ($order) {
             return $mail->order->is($order)
-                && count($mail->attachments()) === 1;
+                && count($mail->attachments()) === 0;
+        });
+
+        $this->get(route('checkout.success', $order->ref))
+            ->assertOk()
+            ->assertSee('Faça a transferência de imediato', false)
+            ->assertSee('PT50 1111 2222 3333 4444 5555 6', false)
+            ->assertSee('Comprovativo de transferência', false)
+            ->assertSee('Enviar', false);
+
+        $this->post(route('checkout.proof', $order->ref), [
+            'transfer_proof' => UploadedFile::fake()->image('comprovativo.jpg', 800, 600),
+        ])->assertRedirect(route('checkout.success', $order->ref));
+
+        $order->refresh();
+        $this->assertSame('comprovativo.jpg', $order->transfer_proof_name);
+        Storage::disk('local')->assertExists($order->transfer_proof_path);
+
+        Mail::assertSent(OrderReceivedAdmin::class, function (OrderReceivedAdmin $mail) use ($order) {
+            return $mail->order->is($order) && count($mail->attachments()) === 1;
         });
     }
 }

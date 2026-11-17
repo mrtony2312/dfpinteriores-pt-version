@@ -70,7 +70,7 @@ Route::get('/sitemap.xml', function () {
             $write(Seo::absolute($p));
         }
 
-        Category::query()->orderBy('id')->chunk(200, function ($chunk) use ($write) {
+        Category::query()->whereIn('id', Category::idsWithProducts())->orderBy('id')->chunk(200, function ($chunk) use ($write) {
             foreach ($chunk as $cat) {
                 $slug = trim((string) $cat->slug, '/');
                 if ($slug === '') {
@@ -109,6 +109,9 @@ Route::get('/carrinho/json', [CartController::class, 'json'])->name('cart.json')
 Route::get('/carrinho/checkout', [CheckoutController::class, 'show'])->name('checkout');
 Route::post('/carrinho/checkout', [CheckoutController::class, 'place'])->name('checkout.place');
 Route::get('/carrinho/checkout/sucesso/{ref}', [CheckoutController::class, 'success'])->name('checkout.success');
+Route::post('/carrinho/checkout/sucesso/{ref}/comprovativo', [CheckoutController::class, 'uploadProof'])
+    ->middleware('throttle:10,1')
+    ->name('checkout.proof');
 
 // --- Favoris (session) ---
 Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');

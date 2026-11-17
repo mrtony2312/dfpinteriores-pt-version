@@ -392,28 +392,7 @@
     </div>
 </div>
 
-{{-- Related --}}
-@if ($relatedProducts->isNotEmpty())
-<div class="themesFlat">
-    <div class="flat-spacing pb-0">
-        <div class="container">
-            <h3 class="text-center spacing-bottom-2">Também pode gostar</h3>
-            <div dir="ltr" class="swiper tf-swiper wrap-sw-over"
-                 data-preview="4" data-tablet="3" data-mobile-sm="2" data-mobile="2"
-                 data-space-xl="15" data-space="15" data-pagination="1">
-                <div class="swiper-wrapper">
-                    @foreach ($relatedProducts as $related)
-                        <div class="swiper-slide">
-                            <x-omniva.product-card :product="$related" />
-                        </div>
-                    @endforeach
-                </div>
-                <div class="sw-dot-default tf-sw-pagination"></div>
-            </div>
-        </div>
-    </div>
-</div>
-@endif
+<x-omniva.similar-products :products="$relatedProducts" />
 @endsection
 
 @push('scripts')
