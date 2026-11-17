@@ -1,0 +1,88 @@
+/* Fiche produit Omniva — ajustements DFP */
+
+.product-infor-name {
+    margin-bottom: 6px;
+}
+
+.tf-product-info-heading .mb-8 {
+    margin-bottom: 8px;
+}
+
+.tf-product-info-heading .mb-12,
+.box-review .mb-12,
+.mt-12 {
+    margin-top: 12px;
+}
+
+.dfp-specs .atributo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 16px;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 13px;
+}
+
+.dfp-specs .atributo > div:first-child {
+    color: #777;
+    font-weight: 600;
+}
+
+.dfp-specs .atributo > div:last-child {
+    color: #1a1a1a;
+    text-align: right;
+}
+
+.variant-picker-values .color-btn .check-color {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.dfp-add-price {
+    margin-left: 8px;
+    opacity: .9;
+}
+
+.product-infor-price[data-dfp-price] .dfp-price-sale,
+.product-infor-price[data-dfp-price] .dfp-price-old,
+.dfp-add-price {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Empêche le thème Omniva d’injecter un préfixe $ */
+.product-infor-price .price-on-sale::before,
+.product-infor-price .price-on-old::before,
+.price-add::before {
+    content: none !important;
+}
+
+.tf-sticky-btn-atc .btn-add-to-cart {
+    border: 0;
+    cursor: pointer;
+}
+
+#dfpAddCart,
+#dfpStickyAdd {
+    cursor: pointer;
+    border: 0;
+}
+
+.section-customer-review .no-rate {
+    opacity: .25;
+}
+
+.infiniteSlide-text.bg-main {
+    background: linear-gradient(90deg, #8b0038 0%, #e5007d 50%, #7a002f 100%);
+}
+
+@media (max-width: 767.98px) {
+    .product-thumbs-slider.style-row {
+        flex-direction: column;
+    }
+
+    .tf-product-media-thumbs {
+        margin-top: 12px;
+    }
+}

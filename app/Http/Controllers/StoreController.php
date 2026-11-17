@@ -814,6 +814,58 @@ HTML;
 
         $offer = app(GoogleProductMapper::class)->mapForLanding($product);
 
+        $gallery = $product->images->map(fn (ProductImage $img) => [
+            'url' => asset($img->path),
+            'filename' => $img->filename,
+        ])->values()->all();
+
+        if ($gallery === []) {
+            $gallery = [['url' => asset('assets/images/no-photo.svg'), 'filename' => 'no-photo.svg']];
+        }
+
+        $colorVariants = [];
+        foreach ($variations['variations'] ?? [] as $row) {
+            $cor = is_array($row['COR'] ?? null) ? $row['COR'] : null;
+            if ($cor === null) {
+                continue;
+            }
+            $thumb = basename((string) ($cor['thumbnail'] ?? data_get($row, 'image.name', '')));
+            $thumbImg = $thumb !== ''
+                ? $product->images->first(fn (ProductImage $i) => $i->filename === $thumb)
+                : null;
+            $colorVariants[] = [
+                'pid' => (int) ($row['pid'] ?? 0),
+                'name' => (string) ($cor['name'] ?? $cor['color'] ?? ''),
+                'color' => (string) ($cor['color'] ?? $cor['name'] ?? ''),
+                'colorcode' => (string) ($cor['colorcode'] ?? '#cccccc'),
+                'price' => (float) ($row['preco'] ?? $product->price),
+                'price_before' => (float) ($row['precoantes'] ?? $product->price_before ?? 0),
+                'stock' => (int) ($row['stock'] ?? 0),
+                'image' => $thumbImg ? asset($thumbImg->path) : ($gallery[0]['url'] ?? null),
+            ];
+        }
+
+        $relatedProducts = Product::query()
+            ->with('images')
+            ->where('id', '!=', $product->id)
+            ->when($product->category_id, fn ($q) => $q->where('category_id', $product->category_id))
+            ->where('price', '>', 0)
+            ->whereHas('images')
+            ->inRandomOrder()
+            ->limit(8)
+            ->get();
+
+        $breadcrumbs = collect([
+            ['label' => 'Início', 'url' => route('home')],
+        ]);
+        if ($product->category_slug) {
+            $breadcrumbs->push([
+                'label' => (string) $product->category_name,
+                'url' => url('/'.$product->category_slug),
+            ]);
+        }
+        $breadcrumbs->push(['label' => $product->name, 'url' => null]);
+
         return view('product', [
             'metaTitle' => $product->name.' | DFP Interiores',
             'metaDescription' => Str::limit($short !== '' ? $short : $product->name, 155),
@@ -840,6 +892,14 @@ HTML;
             'specsHtml' => $specsHtml,
             'hasSpecs' => $specsHtml !== '',
             'hasDesc' => trim(strip_tags((string) $product->long_description_html)) !== '',
+            'gallery' => $gallery,
+            'colorVariants' => $colorVariants,
+            'relatedProducts' => $relatedProducts,
+            'breadcrumbs' => $breadcrumbs,
+            'product' => $product,
+            'price' => (float) $product->price,
+            'priceBefore' => (float) ($product->price_before ?? 0),
+            'inStock' => (bool) $product->in_stock || data_get($product->source_payload, 'vende_apenas_stock', 'N') === 'N',
         ]);
     }
 

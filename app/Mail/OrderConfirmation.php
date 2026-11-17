@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Http\Controllers\CheckoutController;
 use App\Models\Order;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
@@ -13,9 +14,7 @@ class OrderConfirmation extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public function __construct(public Order $order)
-    {
-    }
+    public function __construct(public Order $order) {}
 
     public function envelope(): Envelope
     {
@@ -28,7 +27,10 @@ class OrderConfirmation extends Mailable
     {
         return new Content(
             markdown: 'mail.orders.confirmation',
-            with: ['order' => $this->order->loadMissing('items')],
+            with: [
+                'order' => $this->order->loadMissing('items'),
+                'bank' => CheckoutController::bankDetails(),
+            ],
         );
     }
 }

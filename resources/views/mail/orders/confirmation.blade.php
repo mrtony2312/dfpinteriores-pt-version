@@ -1,11 +1,14 @@
 <x-mail::message>
 # Obrigado pela sua encomenda, {{ \Illuminate\Support\Str::of($order->name)->before(' ') }}!
 
-Recebemos a sua encomenda **{{ $order->ref }}** e está a ser processada.
-Vai receber uma nova mensagem assim que for expedida.
+Recebemos a sua encomenda **{{ $order->ref }}** e o comprovativo de transferência.
+A nossa equipa vai validar o pagamento e contactá-lo se for necessário.
 
 <x-mail::panel>
 **Encomenda {{ $order->ref }}** &nbsp;·&nbsp; {{ $order->created_at->format('d/m/Y H:i') }}
+@if ($order->transfer_proof_name)
+<br>Comprovativo recebido: **{{ $order->transfer_proof_name }}**
+@endif
 </x-mail::panel>
 
 ## Resumo
@@ -23,27 +26,32 @@ Vai receber uma nova mensagem assim que for expedida.
 
 ## Pagamento
 
-Para confirmar a sua encomenda **{{ $order->ref }}**, falta apenas concluir o pagamento no valor de **{{ $order->money($order->total) }}**.
-
 **Método:** {{ $order->paymentLabel() }}
-@if ($order->payment_method === 'MULTIBANCO')
-Vai receber os dados de pagamento (entidade e referência) para pagar numa caixa Multibanco ou por homebanking.
-@else
-Vai receber um pedido de pagamento na aplicação **MB WAY** no número {{ $order->phone }}.
+**Valor:** {{ $order->money($order->total) }}
+
+@if (! empty($bank['iban']) || ! empty($bank['holder']))
+Dados utilizados para a transferência:
+
+| | |
+| :-- | :-- |
+@if (! empty($bank['holder']))
+| Titular | {{ $bank['holder'] }} |
+@endif
+@if (! empty($bank['bank_name']))
+| Banco | {{ $bank['bank_name'] }} |
+@endif
+@if (! empty($bank['iban']))
+| IBAN | {{ $bank['iban'] }} |
+@endif
+@if (! empty($bank['bic']))
+| BIC/SWIFT | {{ $bank['bic'] }} |
+@endif
+@if (! empty($bank['nif']))
+| NIF | {{ $bank['nif'] }} |
+@endif
 @endif
 
-Prefere finalizar o pagamento connosco diretamente? Toque no botão abaixo para falar com a nossa equipa pelo WhatsApp e concluir a sua encomenda.
-
-@php
-    $itemsSummary = $order->items->map(fn ($it) => $it->qty.'x '.$it->name.($it->variation ? ' ('.$it->variation.')' : ''))->implode(', ');
-    $whatsappMessage = "Olá! Quero finalizar o pagamento da minha encomenda {$order->ref}, no valor de {$order->money($order->total)}.\n"
-        ."Nome: {$order->name}\n"
-        ."Artigos: {$itemsSummary}";
-@endphp
-
-<x-mail::button :url="'https://api.whatsapp.com/send?phone=351912026453&text='.urlencode($whatsappMessage)" color="success">
-Finalizar a minha encomenda no WhatsApp
-</x-mail::button>
+Indique a referência **{{ $order->ref }}** no descritivo da transferência.
 
 ## Entrega
 

@@ -35,7 +35,17 @@ class CheckoutController extends Controller
      */
     public static function bankDetails(): array
     {
-        return SiteSetting::current()->bankDetails();
+        try {
+            return SiteSetting::current()->bankDetails();
+        } catch (\Throwable) {
+            return [
+                'holder' => (string) config('checkout.bank.holder', ''),
+                'iban' => (string) config('checkout.bank.iban', ''),
+                'bic' => (string) config('checkout.bank.bic', ''),
+                'bank_name' => (string) config('checkout.bank.bank_name', ''),
+                'nif' => (string) config('checkout.bank.nif', ''),
+            ];
+        }
     }
 
     public function show()

@@ -3,6 +3,12 @@
 
 Recebida a {{ $order->created_at->format('d/m/Y \à\s H:i') }} — total **{{ $order->money($order->total) }}**.
 
+@if ($order->transfer_proof_name)
+<x-mail::panel>
+**Comprovativo de transferência anexado:** {{ $order->transfer_proof_name }}
+</x-mail::panel>
+@endif
+
 <x-mail::table>
 | Artigo | Qt. | P. unit. | Total |
 | :----- | :-: | -------: | ----: |
@@ -42,6 +48,9 @@ _Igual à morada de entrega._
 ## Pagamento
 
 {{ $order->paymentLabel() }}
+@if ($order->transfer_proof_name)
+O ficheiro do comprovativo segue em anexo a este email.
+@endif
 
 @if ($order->notes)
 ## Notas do cliente

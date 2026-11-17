@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\AuthController as AdminAuthController;
+use App\Http\Controllers\Admin\BankSettingController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
@@ -22,6 +24,22 @@ Route::get('/feeds/google-shopping.xml', [GoogleFeedController::class, 'xml'])->
 Route::get('/feeds/google-merchant.xml', [GoogleFeedController::class, 'xml'])->name('feed.gmc');
 Route::get('/dfpinteriores-gmc-conforme.xml', [GoogleFeedController::class, 'xml'])->name('gmc.conforme');
 Route::get('/admin/feed/health', [GoogleFeedController::class, 'health'])->name('feed.health');
+
+// --- Admin : login + édition des données bancaires affichées sur le site ---
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::middleware('throttle:10,1')->group(function () {
+        Route::get('/login', [AdminAuthController::class, 'showLogin'])->name('login');
+        Route::post('/login', [AdminAuthController::class, 'login'])->name('login.submit');
+    });
+    Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
+
+    Route::middleware('admin')->group(function () {
+        Route::get('/', fn () => redirect()->route('admin.bank.edit'));
+        Route::get('/banco', [BankSettingController::class, 'edit'])->name('bank.edit');
+        Route::put('/banco', [BankSettingController::class, 'update'])->name('bank.update');
+        Route::delete('/banco', [BankSettingController::class, 'destroy'])->name('bank.destroy');
+    });
+});
 
 // Sitemap XML : home, pages institutionnelles, catégories, listes + fiches produit.
 Route::get('/sitemap.xml', function () {
