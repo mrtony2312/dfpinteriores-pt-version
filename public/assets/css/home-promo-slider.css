@@ -46,6 +46,10 @@
     height: 100%;
 }
 
+.dfp-promo-swiper .swiper-wrapper {
+    transition-timing-function: linear !important;
+}
+
 .dfp-promo-hero__pag {
     position: absolute;
     left: 0;

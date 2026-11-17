@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="/omniva/css/styles.css">
     <link rel="stylesheet" href="/assets/css/footer-classic.css?v=3">
     <link rel="stylesheet" href="/assets/css/shipping-marquee.css?v=2">
-    <link rel="stylesheet" href="/assets/css/home-promo-slider.css?v=2">
+    <link rel="stylesheet" href="/assets/css/home-promo-slider.css?v=3">
     <link rel="stylesheet" href="/assets/css/site-nav.css?v=8">
     <style>
         /* Bannières promo — image entière, affichage normal */

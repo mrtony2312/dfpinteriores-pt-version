@@ -18,7 +18,7 @@
 
 <section class="dfp-promo-hero" aria-label="Promoções">
     <div class="dfp-promo-hero__banner">
-        <div dir="ltr" class="swiper tf-swiper dfp-promo-swiper" data-auto="false" data-loop="false" data-speed="900" data-effect="fade">
+        <div dir="ltr" class="swiper tf-swiper dfp-promo-swiper" data-auto="true" data-loop="true" data-delay="1" data-speed="9000" data-pause-hover="false">
             <div class="swiper-wrapper">
                 @foreach ($promoSlides as $i => $slide)
                     <div class="swiper-slide">
@@ -91,6 +91,31 @@ src="/media/banners/{{ $slide['file'] }}.jpg?v=20261116"
         </video>
     </div>
 </section>
+
+<script>
+(function () {
+    var keepMoving = function () {
+        var el = document.querySelector('.dfp-promo-swiper');
+        var swiper = el && el.swiper;
+        if (!swiper || !swiper.autoplay) return false;
+        swiper.params.speed = 9000;
+        swiper.params.loop = true;
+        swiper.params.autoplay.delay = 1;
+        swiper.params.autoplay.disableOnInteraction = false;
+        swiper.params.autoplay.pauseOnMouseEnter = false;
+        swiper.wrapperEl.style.transitionTimingFunction = 'linear';
+        swiper.autoplay.stop();
+        swiper.autoplay.start();
+        return true;
+    };
+
+    window.addEventListener('load', function () {
+        if (!keepMoving()) {
+            setTimeout(keepMoving, 400);
+        }
+    });
+})();
+</script>
 
 <script>
 (function () {

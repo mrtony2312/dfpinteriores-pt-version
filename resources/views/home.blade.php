@@ -90,9 +90,44 @@
                 Ver os móveis <i class="icon icon-ArrowRightUp fs-12"></i>
             </span>
         </a>
-
     </div>
 </div>
+
+{{-- Camas en offre, grille 2 x 2 --}}
+@if ($bedOffers->isNotEmpty())
+<div class="flat-spacing">
+    <div class="container">
+        <div class="sect-heading center spacing-bottom-2 wow fadeInUpBlur">
+            <h3 class="s-title mb-24">Ofertas em camas</h3>
+            <p class="s-desc">Quatro modelos em promoção, prontos a entregar.</p>
+            <a href="/camas" class="tf-btn-line text-caption mt-16">Ver todas as camas</a>
+        </div>
+        <div class="tf-grid-layout tf-col-2 gap-15">
+            @foreach ($bedOffers as $product)
+                <x-omniva.product-card :product="$product" />
+            @endforeach
+        </div>
+    </div>
+</div>
+@endif
+
+{{-- Colchões --}}
+@if ($mattresses->isNotEmpty())
+<div class="flat-spacing pt-0">
+    <div class="container">
+        <div class="sect-heading center spacing-bottom-2 wow fadeInUpBlur">
+            <h3 class="s-title mb-24" id="colchoes-home">Colchões</h3>
+            <p class="s-desc">Uma seleção para noites mais confortáveis.</p>
+            <a href="/colchoes" class="tf-btn-line text-caption mt-16">Ver todos os colchões</a>
+        </div>
+        <div class="tf-grid-layout tf-col-2 gap-15">
+            @foreach ($mattresses as $product)
+                <x-omniva.product-card :product="$product" />
+            @endforeach
+        </div>
+    </div>
+</div>
+@endif
 
 {{-- Testimonials --}}
 <div class="flat-spacing">

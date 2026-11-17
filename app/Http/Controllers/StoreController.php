@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Support\Seo;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
@@ -64,6 +65,9 @@ class StoreController extends Controller
             ->limit(8)
             ->get();
 
+        $bedOffers = $this->featuredCategoryProducts('camas', 4, true);
+        $mattresses = $this->featuredCategoryProducts('colchoes', 4);
+
         $shopDefs = [
             ['slug' => 'sofas', 'label' => 'Sofás'],
             ['slug' => 'mobiliario', 'label' => 'Mobiliário'],
@@ -109,9 +113,52 @@ class StoreController extends Controller
             'onSale' => $onSale->isNotEmpty() ? $onSale : $bestSellers,
             'topRated' => $topRated->isNotEmpty() ? $topRated : $bestSellers,
             'dealProducts' => $dealProducts->isNotEmpty() ? $dealProducts : $bestSellers,
+            'bedOffers' => $bedOffers,
+            'mattresses' => $mattresses,
             'shopCategories' => $shopCategories,
             'canonical' => Seo::absolute('/'),
         ]);
+    }
+
+    /**
+     * Produits mis en avant d'une catégorie et de ses enfants directs.
+     *
+     * @return Collection<int, Product>
+     */
+    private function featuredCategoryProducts(string $slug, int $limit, bool $offersOnly = false)
+    {
+        $category = Category::query()->where('slug', $slug)->first();
+        if ($category === null) {
+            return new Collection;
+        }
+
+        $ids = $category->children()->pluck('id')->push($category->id);
+        $query = Product::query()
+            ->with('images')
+            ->whereHas('images')
+            ->where('price', '>', 0)
+            ->where(fn ($products) => $products
+                ->whereIn('category_id', $ids)
+                ->orWhereHas('categories', fn ($categories) => $categories->whereIn('categories.id', $ids)));
+
+        if ($offersOnly) {
+            $offers = (clone $query)
+                ->whereNotNull('price_before')
+                ->whereColumn('price_before', '>', 'price')
+                ->orderByRaw('(price_before - price) / price_before DESC')
+                ->limit($limit)
+                ->get();
+
+            if ($offers->isNotEmpty()) {
+                return $offers;
+            }
+        }
+
+        return $query
+            ->orderByRaw('COALESCE(views_20d, 0) DESC')
+            ->orderByDesc('id')
+            ->limit($limit)
+            ->get();
     }
 
     /** Pages institutionnelles -> vue Blade dans resources/views/pages/. */
