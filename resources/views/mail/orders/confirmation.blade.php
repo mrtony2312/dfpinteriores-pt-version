@@ -1,8 +1,13 @@
 <x-mail::message>
 # Obrigado pela sua encomenda, {{ \Illuminate\Support\Str::of($order->name)->before(' ') }}!
 
+@if ($order->transfer_proof_path)
 Recebemos a sua encomenda **{{ $order->ref }}** e o comprovativo de transferência.
 A nossa equipa vai validar o pagamento e contactá-lo se for necessário.
+@else
+Recebemos a sua encomenda **{{ $order->ref }}** e está a ser processada.
+Vai receber uma nova mensagem assim que for expedida.
+@endif
 
 <x-mail::panel>
 **Encomenda {{ $order->ref }}** &nbsp;·&nbsp; {{ $order->created_at->format('d/m/Y H:i') }}
@@ -24,41 +29,17 @@ A nossa equipa vai validar o pagamento e contactá-lo se for necessário.
 | **Total** | | **{{ $order->money($order->total) }}** |
 </x-mail::table>
 
-## Pagamento
+## Pagamento (transferência bancária)
 
 **Método:** {{ $order->paymentLabel() }}
-<<<<<<< Updated upstream
 **Valor:** {{ $order->money($order->total) }}
+**Descritivo / referência:** {{ $order->ref }}
 
-@if (! empty($bank['iban']) || ! empty($bank['holder']))
-Dados utilizados para a transferência:
-
-| | |
-| :-- | :-- |
-@if (! empty($bank['holder']))
-| Titular | {{ $bank['holder'] }} |
-@endif
-@if (! empty($bank['bank_name']))
-| Banco | {{ $bank['bank_name'] }} |
-@endif
-@if (! empty($bank['iban']))
-| IBAN | {{ $bank['iban'] }} |
-@endif
-@if (! empty($bank['bic']))
-| BIC/SWIFT | {{ $bank['bic'] }} |
-@endif
-@if (! empty($bank['nif']))
-| NIF | {{ $bank['nif'] }} |
-@endif
-@endif
-
-Indique a referência **{{ $order->ref }}** no descritivo da transferência.
-=======
-
-@php($bank = \App\Http\Controllers\CheckoutController::bankDetails())
-Efetue a transferência bancária no valor de **{{ $order->money($order->total) }}** com o descritivo **{{ $order->ref }}**:
-
+@php
+    $bank = $bank ?? \App\Http\Controllers\CheckoutController::bankDetails();
+@endphp
 @if ($bank['holder'] || $bank['iban'])
+Dados da conta:
 @if ($bank['holder'])
 - **Titular:** {{ $bank['holder'] }}
 @endif
@@ -74,29 +55,26 @@ Efetue a transferência bancária no valor de **{{ $order->money($order->total) 
 @if ($bank['nif'])
 - **NIF:** {{ $bank['nif'] }}
 @endif
-@else
-Os dados bancários serão comunicados pela nossa equipa.
 @endif
 
 @if ($order->transfer_proof_path)
-Recebemos o seu comprovativo (**{{ $order->transfer_proof_name }}**) — também segue em anexo neste email.
+Recebemos o seu comprovativo de pagamento (**{{ $order->transfer_proof_name }}**). O ficheiro segue em anexo neste email (recibo da transação).
+A nossa equipa vai validar a transferência e processar a encomenda — não é necessário efetuar um novo pagamento.
+@else
+Efetue a transferência bancária no valor de **{{ $order->money($order->total) }}** com o descritivo **{{ $order->ref }}**.
+Assim que confirmarmos o pagamento, a encomenda avança para preparação.
 @endif
-
-A encomenda será processada após confirmação do pagamento.
-
-Prefere falar connosco? Toque no botão abaixo para contactar a nossa equipa pelo WhatsApp.
 
 @php
     $itemsSummary = $order->items->map(fn ($it) => $it->qty.'x '.$it->name.($it->variation ? ' ('.$it->variation.')' : ''))->implode(', ');
-    $whatsappMessage = "Olá! Quero finalizar o pagamento da minha encomenda {$order->ref}, no valor de {$order->money($order->total)}.\n"
+    $whatsappMessage = "Olá! Sobre a minha encomenda {$order->ref} ({$order->money($order->total)}).\n"
         ."Nome: {$order->name}\n"
         ."Artigos: {$itemsSummary}";
 @endphp
 
 <x-mail::button :url="'https://api.whatsapp.com/send?phone=351912026453&text='.urlencode($whatsappMessage)" color="success">
-Finalizar a minha encomenda no WhatsApp
+Falar connosco no WhatsApp
 </x-mail::button>
->>>>>>> Stashed changes
 
 ## Entrega
 

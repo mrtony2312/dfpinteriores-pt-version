@@ -316,16 +316,7 @@ window.pageLogic = function(ob) {
 	const produtoErros = ref({
 		
 	})
-	const addProduct = async () => {
-
-	 
-		if(Imperline.value?.length > 0 && !selectedImper.value){
-			alert("Escolha uma opção de impermeabilização");
-			scrollToDiv('Impermeabilizacao');
-			
-			return false;
-		}
-		
+	const resolveVariationId = () => {
 		let id = selectedOption.value?.pid;
 
 		// Aucune option choisie : on retient automatiquement la 1ère variation
@@ -333,7 +324,6 @@ window.pageLogic = function(ob) {
 		if (!id && pv.value.variations.length >= 1) {
 			const auto = pv.value.variations.find(v => Number(v.stock) > 0) || pv.value.variations[0];
 			id = auto?.pid;
-			// reflète le choix dans l'interface si possible
 			if (auto) {
 				Object.keys(availableOptions.value).forEach((key) => {
 					if (auto[key] && auto[key].name) selected.value[key] = auto[key].name;
@@ -341,29 +331,70 @@ window.pageLogic = function(ob) {
 			}
 		}
 
+		return id;
+	};
+
+	const canAddProduct = () => {
+		if (Imperline.value?.length > 0 && !selectedImper.value) {
+			alert("Escolha uma opção de impermeabilização");
+			scrollToDiv('Impermeabilizacao');
+			return false;
+		}
+		return true;
+	};
+
+	const postToCart = async (url) => {
+		const id = resolveVariationId();
+		const response = await axios.post(url, {
+			product: productId,
+			variation: id,
+			protec: selectedImper.value?.protec_erpid ?? '',
+			seguro: segurosSelecionados.value || ""
+		});
+
+		ob.Cart.value = response.data.cart;
+		window.dataLayer = window.dataLayer || [];
+		if (response.data.dl) {
+			dataLayer.push(JSON.parse(response.data.dl));
+		}
+
+		return response.data;
+	};
+
+	const addProduct = async () => {
+		if (!canAddProduct()) {
+			return false;
+		}
+
 		loader.value = true;
 		try {
-			let response = await axios.post("/carrinho/add", {
-				product: productId,
-				variation: id,
-				protec: selectedImper.value?.protec_erpid ?? '', //"document.querySelector(".Impermeabilizacao select")?.value || "",
-				seguro: segurosSelecionados.value || ""
-			});
-	
-			ob.Cart.value = response.data.cart;
-
-			//addDataLayer(response.data.dl);
-			window.dataLayer = window.dataLayer || [];
-			dataLayer.push(JSON.parse(response.data.dl)); //dataLayer.push(response.data.dl);
-			
-
-			// Ne plus ouvrir le panier automatiquement : simple confirmation visuelle.
-			if (typeof window.shopToast === 'function')
-				window.shopToast('Produto adicionado ao carrinho 🛒');
-			loader.value = false;
+			await postToCart("/carrinho/add");
+			modalFinalizar.visible = true;
+			if (typeof window.shopToast === 'function') {
+				window.shopToast('Produto adicionado ao carrinho');
+			}
 		} catch (err) {
 			console.log(err);
 			alert("Ocorreu um erro, tente novamente");
+		} finally {
+			loader.value = false;
+		}
+	};
+
+	/** Ajoute au panier et ouvre directement le checkout (virement bancaire). */
+	const buyNow = async () => {
+		if (!canAddProduct()) {
+			return false;
+		}
+
+		loader.value = true;
+		try {
+			const data = await postToCart("/carrinho/comprar");
+			window.location.href = data.checkout_url || "/carrinho/checkout";
+		} catch (err) {
+			console.log(err);
+			alert("Ocorreu um erro, tente novamente");
+			loader.value = false;
 		}
 	};
 	
@@ -471,6 +502,7 @@ window.pageLogic = function(ob) {
  
     return {
         addProduct,
+        buyNow,
         isOptionAvailable,
         consultaStockLojas,
         validaSeguro,

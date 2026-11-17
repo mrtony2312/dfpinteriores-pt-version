@@ -64,8 +64,9 @@
                     @endif
                     {{ $precoAtual > 0 ? number_format($precoAtual, 0, ',', ' ').'€' : 'Sob consulta' }}
                 </div>
-                <div style="display:none;">
-                    <a class="vermais" href="{{ url('/'.$p->slug) }}">VER MAIS</a>
+                <div class="card-order-actions">
+                    <button type="button" class="card-btn" data-add-cart="{{ $p->id }}">Adicionar</button>
+                    <button type="button" class="card-btn card-btn-buy" data-buy-now="{{ $p->id }}">Comprar</button>
                 </div>
             </div>
         </div>

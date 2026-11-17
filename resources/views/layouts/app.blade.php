@@ -56,14 +56,8 @@
     <link rel="stylesheet" href="/omniva/icon/icomoon/style.css">
     <link rel="stylesheet" href="/omniva/css/swiper-bundle.min.css">
     <link rel="stylesheet" href="/omniva/css/styles.css">
-<<<<<<< Updated upstream
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-=======
-    <link rel="stylesheet" href="/assets/css/site-nav.css?v=4">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-
->>>>>>> Stashed changes
 
     <!-- Place this data between the <head> tags of your website -->
     <title>@yield('title', 'DFP Interiores')</title>
@@ -144,10 +138,8 @@
     <link href="/assets/css/pt/feira.css?id=2" rel="stylesheet">
     <link href="/assets/css/shop.css?v=16" rel="stylesheet">
     <link rel="stylesheet" href="/assets/css/footer-classic.css?v=3">
-<<<<<<< Updated upstream
     <link rel="stylesheet" href="/assets/css/site-nav.css?v=6">
-=======
->>>>>>> Stashed changes
+
 
 
     <style>
@@ -1787,10 +1779,18 @@
         </div>
     @endverbatim
     @stack('scripts')
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
+<style>
+.product-order-actions { display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+.product-order-actions .BuyNow { background:#111 !important; }
+.product-order-actions .AddCarrinho.disabled { opacity:.6; pointer-events:none; }
+.card-order-actions { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+.card-order-actions .card-btn {
+    flex:1; min-width:90px; border:1px solid #111; background:#fff; color:#111;
+    font-size:12px; font-weight:700; text-transform:uppercase; padding:8px 10px; cursor:pointer;
+}
+.card-order-actions .card-btn-buy { background:#e5007d; border-color:#e5007d; color:#fff; }
+.card-order-actions .card-btn:disabled { opacity:.6; cursor:wait; }
+</style>
 <script src="/omniva/js/plugin/swiper-bundle.min.js"></script>
 <script>
 (function () {
@@ -1810,11 +1810,90 @@
         });
     });
 })();
-<<<<<<< Updated upstream
+
+(function () {
+    var token = document.querySelector('meta[name="csrf-token"]')?.content;
+
+    function updateCartUi(cart) {
+        if (!cart) return;
+        var items = cart.items || [];
+        var n = items.reduce(function (sum, i) { return sum + (i.qtd || 0); }, 0);
+        document.querySelectorAll('.cart-count, #cart-count-badge, .OpenCarrinho .count').forEach(function (el) {
+            if (el.id === 'cart-count-badge') {
+                el.textContent = n > 0 ? String(n) : '';
+                el.classList.toggle('is-zero', n <= 0);
+            } else {
+                el.textContent = String(n);
+            }
+        });
+        if (window.ob && window.ob.Cart) {
+            window.ob.Cart.value = cart;
+        }
+    }
+
+    async function cartRequest(url, productId, btn) {
+        if (!token || !productId) return null;
+        var original = btn ? btn.textContent : '';
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = '...';
+        }
+        try {
+            var r = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': token,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({ product: String(productId), qtd: '1', _token: token }),
+            });
+            if (!r.ok) throw new Error('cart request failed');
+            return await r.json();
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = original;
+            }
+        }
+    }
+
+    document.addEventListener('click', async function (e) {
+        var buyBtn = e.target.closest('[data-buy-now]');
+        if (buyBtn) {
+            e.preventDefault();
+            try {
+                var buyData = await cartRequest('/carrinho/comprar', buyBtn.getAttribute('data-buy-now'), buyBtn);
+                if (buyData) {
+                    updateCartUi(buyData.cart);
+                    window.location.href = buyData.checkout_url || '/carrinho/checkout';
+                }
+            } catch (err) {
+                alert('Não foi possível iniciar a encomenda. Tente novamente.');
+            }
+            return;
+        }
+
+        var addBtn = e.target.closest('[data-add-cart]');
+        if (!addBtn) return;
+        e.preventDefault();
+        try {
+            var addData = await cartRequest('/carrinho/add', addBtn.getAttribute('data-add-cart'), addBtn);
+            if (!addData) return;
+            updateCartUi(addData.cart);
+            if (typeof window.shopToast === 'function') {
+                window.shopToast('Produto adicionado ao carrinho');
+            } else {
+                addBtn.textContent = 'Adicionado';
+                setTimeout(function () { addBtn.textContent = 'Adicionar'; }, 1500);
+            }
+        } catch (err) {
+            alert('Não foi possível adicionar ao carrinho. Tente novamente.');
+        }
+    });
+})();
 </script>
 </body>
-=======
-</script></body>
->>>>>>> Stashed changes
 
 </html>

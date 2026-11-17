@@ -45,14 +45,8 @@ class UserFactory extends Factory
 
     public function admin(): static
     {
-<<<<<<< Updated upstream
-        return $this->state(fn (array $attributes) => [
-            'is_admin' => true,
-        ]);
-=======
         return $this->afterCreating(function (User $user): void {
             $user->grantAdmin();
         });
->>>>>>> Stashed changes
     }
 }

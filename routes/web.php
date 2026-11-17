@@ -32,24 +32,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/login', [AdminAuthController::class, 'login'])->name('login.submit');
     });
     Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
-<<<<<<< Updated upstream
-=======
-
-    Route::middleware('admin')->group(function () {
-        Route::get('/', fn () => redirect()->route('admin.bank.edit'));
-        Route::get('/banco', [BankSettingController::class, 'edit'])->name('bank.edit');
-        Route::put('/banco', [BankSettingController::class, 'update'])->name('bank.update');
-        Route::delete('/banco', [BankSettingController::class, 'destroy'])->name('bank.destroy');
-    });
-});
-
-// Sitemap XML : pages institutionnelles + fiches produit publiées (avec image).
-Route::get('/sitemap.xml', function () {
-    $base = rtrim(config('feed.base_url'), '/');
-    $static = ['', '/lojas', '/contactos', '/apoioaocliente', '/ajuda/termos-e-condicoes',
-        '/ajuda/politica-privacidade', '/ajuda/politica-de-cookies', '/ajuda/politica-de-envios',
-        '/ajuda/politica-de-devolucoes', '/ajuda/resolucao-alternativa-litigios'];
->>>>>>> Stashed changes
 
     Route::middleware('admin')->group(function () {
         Route::get('/', fn () => redirect()->route('admin.bank.edit'));
@@ -118,6 +100,7 @@ Route::get('/sitemap.xml', function () {
 
 // --- Panier (session) ---
 Route::post('/carrinho/add', [CartController::class, 'add'])->name('cart.add');
+Route::post('/carrinho/comprar', [CartController::class, 'buyNow'])->name('cart.buy');
 Route::post('/carrinho/update', [CartController::class, 'update'])->name('cart.update');
 Route::post('/carrinho/remove', [CartController::class, 'remove'])->name('cart.remove');
 Route::get('/carrinho/json', [CartController::class, 'json'])->name('cart.json');

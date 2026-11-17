@@ -61,9 +61,7 @@ class AdminBankSettingTest extends TestCase
         $this->assertSame('PT50 1111 2222 3333 4444 5555 6', $settings->bank_iban);
         $this->assertSame('BBPIPTPL', $settings->bank_bic);
         $this->assertDatabaseHas('bank_setting_audits', ['action' => 'updated']);
-<<<<<<< Updated upstream
         $this->assertSame('PT50 1111 2222 3333 4444 5555 6', CheckoutController::bankDetails()['iban']);
-=======
     }
 
     public function test_admin_can_clear_bank_details(): void
@@ -103,6 +101,5 @@ class AdminBankSettingTest extends TestCase
         $this->assertSame('Conta Site', $details['holder']);
         $this->assertSame('PT50 9999 8888 7777 6666 5555 4', $details['iban']);
         $this->assertSame('CGDIPTPL', $details['bic']);
->>>>>>> Stashed changes
     }
 }

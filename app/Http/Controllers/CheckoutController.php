@@ -35,7 +35,6 @@ class CheckoutController extends Controller
      */
     public static function bankDetails(): array
     {
-<<<<<<< Updated upstream
         try {
             return SiteSetting::current()->bankDetails();
         } catch (\Throwable) {
@@ -47,9 +46,6 @@ class CheckoutController extends Controller
                 'nif' => (string) config('checkout.bank.nif', ''),
             ];
         }
-=======
-        return SiteSetting::current()->bankDetails();
->>>>>>> Stashed changes
     }
 
     public function show()

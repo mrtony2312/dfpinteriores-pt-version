@@ -22,11 +22,6 @@ return Application::configure(basePath: dirname(__DIR__))
             ValidateCsrfToken::class => VerifyCsrfToken::class,
         ]);
 
-<<<<<<< Updated upstream
-        $middleware->alias([
-            'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
-        ]);
-=======
         $middleware->appendToGroup('web', [
             SecurityHeaders::class,
         ]);
@@ -38,7 +33,6 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectGuestsTo(fn (Request $request) => $request->is('admin', 'admin/*')
             ? route('admin.login')
             : route('cliente'));
->>>>>>> Stashed changes
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
