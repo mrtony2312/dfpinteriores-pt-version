@@ -110,10 +110,10 @@ class StoreController extends Controller
             'topRated' => $topRated->isNotEmpty() ? $topRated : $bestSellers,
             'dealProducts' => $dealProducts->isNotEmpty() ? $dealProducts : $bestSellers,
             'shopCategories' => $shopCategories,
-<<<<<<< Updated upstream
             'canonical' => Seo::absolute('/'),
 =======
->>>>>>> Stashed changes
+            'canonical' => Seo::absolute('/'),
+>>>>>>> 0e3f61dec140a7eb9df5a60aaeca78da7a0aeaa0
         ]);
     }
 

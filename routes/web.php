@@ -57,7 +57,6 @@ Route::get('/sitemap.xml', function () {
         '/ajuda/politica-de-devolucoes',
         '/ajuda/resolucao-alternativa-litigios',
     ];
-
     return response()->stream(function () use ($static) {
         $out = fopen('php://output', 'w');
         fwrite($out, '<?xml version="1.0" encoding="UTF-8"?>'."\n".'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n");
