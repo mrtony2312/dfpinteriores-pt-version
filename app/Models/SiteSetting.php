@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class SiteSetting extends Model
 {
@@ -21,6 +23,8 @@ class SiteSetting extends Model
      */
     public static function current(): self
     {
+        static::ensureBankColumns();
+
         $settings = static::query()->first();
 
         if ($settings !== null) {
@@ -35,6 +39,21 @@ class SiteSetting extends Model
             'bank_nif' => (string) config('checkout.bank.nif'),
             'bank_nib' => (string) config('checkout.bank.nib'),
         ]);
+    }
+
+    /**
+     * Ajoute les colonnes bancaires manquantes. Le site en ligne ne lance pas
+     * toujours les migrations après un déploiement.
+     */
+    public static function ensureBankColumns(): void
+    {
+        if (! Schema::hasTable('site_settings') || Schema::hasColumn('site_settings', 'bank_nib')) {
+            return;
+        }
+
+        Schema::table('site_settings', function (Blueprint $table): void {
+            $table->string('bank_nib', 32)->nullable();
+        });
     }
 
     /**

@@ -6,6 +6,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Models\SiteSetting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 class AdminBankSettingTest extends TestCase
@@ -67,6 +68,24 @@ class AdminBankSettingTest extends TestCase
         $this->assertDatabaseHas('bank_setting_audits', ['action' => 'updated']);
         $this->assertSame('PT50 1111 2222 3333 4444 5555 6', CheckoutController::bankDetails()['iban']);
         $this->assertSame('0000 0000 00000000000 00', CheckoutController::bankDetails()['nib']);
+    }
+
+    public function test_admin_update_adds_the_nib_column_when_it_is_missing(): void
+    {
+        SiteSetting::current();
+        Schema::table('site_settings', function ($table): void {
+            $table->dropColumn('bank_nib');
+        });
+
+        $this->actingAsAdmin()
+            ->put(route('admin.bank.update'), [
+                'bank_holder' => 'DFP Interiores Teste',
+                'bank_nib' => '0000 0000 00000000000 00',
+            ])
+            ->assertRedirect(route('admin.bank.edit'));
+
+        $this->assertTrue(Schema::hasColumn('site_settings', 'bank_nib'));
+        $this->assertSame('0000 0000 00000000000 00', SiteSetting::current()->bank_nib);
     }
 
     public function test_admin_can_clear_bank_details(): void
